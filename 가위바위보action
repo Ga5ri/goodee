@@ -1,0 +1,68 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	// 한글로된 jsp 파일을 받기위해 하기 코드 작성
+	request.setCharacterEncoding("utf-8");
+
+	String userRsp = request.getParameter("rsp"); // 사용자의 결정(가위/바위/보 중 하나)
+	
+	String comRsp = null; // 컴퓨터의 결정(가위/바위/보 중 하나)
+	
+	String imgName1 = null;
+	String imgName2 = null;
+	
+	int num = (int)(Math.random()* 3 ); // 0.0...~2.9.. 사이의 실수 -> 0,1,2
+	
+	
+	if(num == 0){
+		comRsp = "가위";
+	} else if(num == 1) {
+		comRsp = "바위";
+	} else if(num == 2) {
+		comRsp = "보";
+	}
+	
+	if(userRsp.equals(comRsp)){ // 비기는 조건 문자열 등호 equals 사용 -> boolean 값으로 리턴
+%>	
+		<h2>
+			<div>
+				당신: <%=userRsp%> / 컴퓨터: <%=comRsp%>
+			</div>
+			<div>
+			비겼습니다..
+			</div>
+		</h2>
+<%
+	} else if((userRsp.equals("가위")&&comRsp.equals("보"))||(userRsp.equals("바위")&&comRsp.equals("가위"))||(userRsp.equals("보")&&comRsp.equals("바위"))) { // 이기는 조건
+%>		
+		<h2>
+			<div>
+				당신: <%=userRsp%> / 컴퓨터: <%=comRsp%>
+			</div>
+			<div>
+			이겼습니다!!
+			</div>
+		</h2>
+<%	
+	} else { // 지는경우
+%>		
+		<h2>
+			<div>
+				당신: <%=userRsp%> / 컴퓨터: <%=comRsp%>
+			</div>
+			<div>
+			졌습니다ㅜㅜ
+			</div>
+		</h2>
+<%	
+	}
+%>      
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+</body>
+</html>
