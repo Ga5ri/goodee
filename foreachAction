@@ -1,0 +1,33 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+	request.setCharacterEncoding("utf-8");
+	// 빈값 테스트
+	// text -> 공백이 넘어옴
+	// radio, checkbox -> 아무것도 안넘어옴 null값이 대입
+	String name = request.getParameter("name");
+	System.out.println(name);
+	
+	String gender = request.getParameter("gender");
+	System.out.println(gender);
+	
+	String[] hobby = request.getParameterValues("hobby");
+	System.out.println(hobby);
+	
+	if(hobby != null){
+	for(String h : hobby){
+		System.out.println(h);
+		}
+	}
+	
+	String[] nickname = request.getParameterValues("nickname");
+	System.out.println(nickname);
+	
+	for(String nick : nickname){
+		// nick.equals("") != true, !nick.equals("")
+		if(nick.equals("") == false) { // 별명에 공백이 출력되는 버그 수정
+		System.out.println(nick);
+		}
+	}
+		
+%>
