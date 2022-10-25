@@ -1,0 +1,21 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RSPGAME</title>
+</head>
+<body>
+	<form action="./rspAction.jsp" method="post">
+		<h2>컴퓨터와 가위바위보 게임</h2> <!-- 제목 -->
+		<div> 
+			<input type="radio" name="rsp" value="가위">가위
+			<input type="radio" name="rsp" value="바위">바위
+			<input type="radio" name="rsp" value="보">보
+		</div>
+		<br>
+		<button type="submit" value="user">전송</button>
+	</form>
+</body>
+</html>
