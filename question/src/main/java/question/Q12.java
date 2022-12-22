@@ -20,13 +20,19 @@ public class Q12 {
 		Date d4 = new Date();
 		
 		// equals 메서드는 객체끼리의 내용 비교
-		System.out.println(i1.equals(i2));
 		// Integer 객체값 1로 동일 => true
-		System.out.println(s1.equals(s2));
+		System.out.println(i1.equals(i2));
+		
 		// String 문자열 one 동일 => true
+		System.out.println(s1.equals(s2));
+		
+		// StringBuffer내 실제 문자열이 아닌 개체에 대한 참조값 비교 => false
 		System.out.println(sf1.equals(sf2));
-		// StringBuffer 내의 실제 문자열이 아닌 개체에 대한 참조값 비교 => false
+		
+		// 시간대가 동일하게 생성 2011.07.15 00:00:00 => true
 		System.out.println(d2.equals(d3));
+		
+		// 밀리초 단위로 선언되는 시간에 차이 => false
 		System.out.println(d1.equals(d4));
 	}
 
