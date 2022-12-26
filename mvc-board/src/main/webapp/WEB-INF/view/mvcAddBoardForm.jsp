@@ -13,7 +13,7 @@ C -> V
 </head>
 <body>
    <h1>게시글 입력</h1>
-   <form method="post" action="<%=request.getContextPath()%>/jsp/jspAddBoardAction.jsp">
+   <form method="post" action="<%=request.getContextPath()%>/AddBoardActionController" method="post">
       <table border="1">
          <tr>
             <td>title</td>
@@ -29,6 +29,6 @@ C -> V
          </tr>
       </table>
       <button type="submit">글입력</button>
-   </form>
+   </form>   
 </body>
 </html>

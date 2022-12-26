@@ -15,8 +15,6 @@
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, no);
 		ResultSet rs = stmt.executeQuery();
-
-	
 %>
 <!DOCTYPE html>
 <html>
@@ -26,17 +24,21 @@
 </head>
 <body>
 	<h1>상세보기</h1>
-	<table>
+	<table border="1">
 		<%
 				while(rs.next()) { // ResultSet타입은 내부적 이터레이터 패턴이 적용된 API를 가지고 있다.
 			%>
 				<tr>
+					<td>No</td>
 					<td><%=rs.getInt("no")%></td>
-					<td>
-						<a href='<%=request.getContextPath()%>/jsp/boardOne.jsp?no=<%=rs.getInt("no")%>'>
-							<%=rs.getString("title")%>
-						</a>
-					</td>
+				</tr>
+				<tr>
+					<td>Title</td>	
+					<td><%=rs.getString("title")%></td>
+				</tr>
+				<tr>
+					<td>Content</td>
+					<td><%=rs.getString("content")%></td>
 				</tr>
 			<%		
 				}
