@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import service.BoardService;
 import vo.Board;
 // Model(일반 클래스) - Controller(Servlet클래스 상속) - View(JSP)
-@WebServlet("/mvc/BoardListController")
+@WebServlet("/BoardListController")
 public class BoardListController extends HttpServlet {
    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
       BoardService boardService = new BoardService();

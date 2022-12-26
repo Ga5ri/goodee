@@ -16,7 +16,7 @@ import vo.Board;
 // list select					: C -> M -> V 
 // form	페이지호출					: C -> V
 // action insert/update/delete	: C -> M =====> response.sendRedirect()
-@WebServlet("/mvc/AddBoardActionController")
+@WebServlet("/AddBoardActionController")
 public class AddBoardActionController extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
