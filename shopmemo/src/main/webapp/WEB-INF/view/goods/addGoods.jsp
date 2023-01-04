@@ -22,8 +22,12 @@
 				<td><input type="text" name="contentType"></td>
 			</tr>
 			<tr>
+				<td>상품 원본타입</td>
+				<td><input type="text" name="originName"></td>
+			</tr>
+			<tr>
 				<td>상품 가격</td>
-				<td><input type="text" name="goodsPrice"></td>
+				<td><input type="number" name="goodsPrice"></td>
 			</tr>
 			<tr>
 				<td>상품 재고(Y선택시 품절)</td>

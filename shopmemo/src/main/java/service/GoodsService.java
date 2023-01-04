@@ -23,7 +23,7 @@ public class GoodsService {
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
-			System.out.println(conn+"<-Connection확인");
+			System.out.println("db 접속1");
 			conn.setAutoCommit(false);
 			goodsDao = new GoodsDao();
 			list = goodsDao.selectItemList(conn);
@@ -53,12 +53,11 @@ public class GoodsService {
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
-			System.out.println("addItem service db 접속");
+			System.out.println("db 접속");
 			conn.setAutoCommit(false);
 			
 			HashMap<String, Integer> map = goodsDao.insertItem(conn, goods);
-				System.out.println("map.get('row'): "+map.get("row")+", map.get('autoKey'): "+map.get("autoKey"));
-			
+				
 			goodsImg.setGoodsCode(map.get("autoKey")); // map에서 받은 키값을 goodsImg타입에 저장
 			// 키값을 goodsImg타입에 저장 후 goodsImgDao 호출
 	        row = goodsImgDao.insertItem(conn, goodsImg); // goodsImg.getGoodsCode() --> 0

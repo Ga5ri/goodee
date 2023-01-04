@@ -24,7 +24,7 @@ public class AddGoodsController extends HttpServlet {
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("utf-8"); // 한글 인코딩
-		
+
 		// MultipartRequest에 들어갈 매개변수
 		String dir = request.getServletContext().getRealPath("/upload");
 		int maxFileSize = 1024 * 1024 * 100;
@@ -32,26 +32,29 @@ public class AddGoodsController extends HttpServlet {
 		
 		// form에서 보낸 정보들을 req에 모두 저장
 		MultipartRequest mreq = new MultipartRequest(request, dir, maxFileSize, "utf-8", fp);
-		System.out.println(mreq+"<-merq");
 		
 		// req에서 불러올 정보 불러오기
+		int price = Integer.parseInt(request.getParameter("goodsPrice"));
 		String goodsName = mreq.getParameter("goodsName");
-		String goodsSoldout = mreq.getParameter("soldout");
+		String soldout = mreq.getParameter("soldout");
 		String empId = mreq.getParameter("emp_id");
-		String fileName = mreq.getOriginalFileName("goodsImg");
+		String fileName = mreq.getFilesystemName("goodsImg"); // 서버에 실제 업로드된 파일명
 		String contentType = mreq.getParameter("contentType");
+		String originName = mreq.getOriginalFileName("originName"); // 클라이언트가 업로드한 파일 원본
 		
 		Goods goods = new Goods(); // goods에 상품이름 저장
 		goods.setGoodsName(goodsName);
+		goods.setGoodsPrice(price);
 		goods.setEmpId(empId);
-		goods.setSoldout(goodsSoldout);
+		goods.setSoldout(soldout);
 		goods.setHit(contentType);
+		
 
 		
 		GoodsImg goodsImg = new GoodsImg(); // goodsImg에 이미지파일이름 저장
 		goodsImg.setFilename(fileName);
 		goodsImg.setContentType(contentType);
-		
+		goodsImg.setOriginName(originName);
 		
 		GoodsService goodsService = new GoodsService();
 		int row = goodsService.addItem(goods, goodsImg, dir);
