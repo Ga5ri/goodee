@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import service.GoodsService;
 
-@WebServlet("/ItemListController")
-public class ItemListController extends HttpServlet {
+@WebServlet("/GoodsListController")
+public class GoodsListController extends HttpServlet {
 	private GoodsService goodsService;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		goodsService = new GoodsService();

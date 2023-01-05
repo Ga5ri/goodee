@@ -11,11 +11,15 @@
 		<table border="1">
 			<tr>
 				<td>상품 등록자 ID</td>
-				<td><input type="text" name="emp_id" value=""></td>
+				<td><input type="text" name="empId" value=""></td>
 			</tr>
 			<tr>
 				<td>상품명</td>
 				<td><input type="text" name="goodsName"></td>
+			</tr>
+			<tr>
+				<td>상품 설명</td>
+				<td><textarea rows="5" cols="30" name="goodsMemo"></textarea></td>
 			</tr>
 			<tr>
 				<td>상품 타입</td>

@@ -3,6 +3,7 @@ package vo;
 public class Goods {
 	private String goodsName;
 	private int goodsPrice;
+	private String goodsMemo;
 	private String soldout;
 	private String empId;
 	private String hit;
@@ -11,10 +12,12 @@ public class Goods {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Goods(String goodsName, int goodsPrice, String soldout, String empId, String hit, String createdate) {
+	public Goods(String goodsName, int goodsPrice, String goodsMemo, String soldout, String empId, String hit,
+			String createdate) {
 		super();
 		this.goodsName = goodsName;
 		this.goodsPrice = goodsPrice;
+		this.goodsMemo = goodsMemo;
 		this.soldout = soldout;
 		this.empId = empId;
 		this.hit = hit;
@@ -31,6 +34,12 @@ public class Goods {
 	}
 	public void setGoodsPrice(int goodsPrice) {
 		this.goodsPrice = goodsPrice;
+	}
+	public String getGoodsMemo() {
+		return goodsMemo;
+	}
+	public void setGoodsMemo(String goodsMemo) {
+		this.goodsMemo = goodsMemo;
 	}
 	public String getSoldout() {
 		return soldout;
@@ -58,7 +67,8 @@ public class Goods {
 	}
 	@Override
 	public String toString() {
-		return "Goods [goodsName=" + goodsName + ", goodsPrice=" + goodsPrice + ", soldout=" + soldout + ", empId="
-				+ empId + ", hit=" + hit + ", createdate=" + createdate + "]";
+		return "Goods [goodsName=" + goodsName + ", goodsPrice=" + goodsPrice + ", goodsMemo=" + goodsMemo
+				+ ", soldout=" + soldout + ", empId=" + empId + ", hit=" + hit + ", createdate=" + createdate + "]";
 	}
+	
 }
