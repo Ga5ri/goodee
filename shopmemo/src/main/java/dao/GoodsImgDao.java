@@ -2,12 +2,22 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import vo.Goods;
 import vo.GoodsImg;
 
 public class GoodsImgDao {
+	// 상품 수정
+	public int modifyGoods(Connection conn, GoodsImg goodsImg) throws Exception {
+		int row = 0;
+		String sql = "UPDATE goods_img SET content_type = ?, createdate = NOW() WHERE goods_code = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, goodsImg.getContentType());
+		stmt.setInt(2, goodsImg.getGoodsCode());
+		row = stmt.executeUpdate();
+		return row;
+	}
+	
 	// 상품 추가
 	public int insertItem(Connection conn, GoodsImg goodsImg) throws Exception {
 		int row = 0;

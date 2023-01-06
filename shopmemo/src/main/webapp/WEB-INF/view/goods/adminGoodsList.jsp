@@ -7,7 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>상품목록(고객)(메뉴 들어갈 자리)</h1>
+	<h1>상품목록(관리자)(메뉴 들어갈 자리)</h1>
 	<table border="1">
 		<tr>
 			<c:forEach var="m" items="${list}" varStatus="s">
@@ -18,7 +18,6 @@
 					<div><img src="${pageContext.request.contextPath}/upload/${m.filename}" width="200" height="200"></div>
 					<div><a href="${pageContext.request.contextPath}/goods/goodsOne?goodsCode=${m.goodsCode}">${m.goodsName}</a></div>
 					<div>${m.goodsPrice}원</div>
-					<!-- 중간관리자 이상 레벨에서만 보이게 변경필요 -->
 					<div><a href="${pageContext.request.contextPath}/goods/modifyGoods?goodsCode=${m.goodsCode}">수정</a>삭제</div>
 				</td>
 			</c:forEach>

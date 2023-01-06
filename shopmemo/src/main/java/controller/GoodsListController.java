@@ -14,13 +14,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import service.GoodsService;
 
-@WebServlet("/GoodsListController")
+@WebServlet("/goods/goodsList")
 public class GoodsListController extends HttpServlet {
 	private GoodsService goodsService;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		goodsService = new GoodsService();
+		
 		ArrayList<HashMap<String, Object>> list = goodsService.getItemList();
+		
 		request.setAttribute("list", list);
+		
 		request.getRequestDispatcher("/WEB-INF/view/goods/goodsList.jsp").forward(request, response);
 	}
 }

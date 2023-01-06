@@ -6,6 +6,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<!-- 중간관리자 이상만 가능한 기능 -->
 	<h1>상품등록</h1>
 	<form action="${pageContext.request.contextPath}/AddGoodsController" enctype="multipart/form-data" method="post" >
 		<table border="1">
@@ -16,10 +17,6 @@
 			<tr>
 				<td>상품명</td>
 				<td><input type="text" name="goodsName"></td>
-			</tr>
-			<tr>
-				<td>상품 설명</td>
-				<td><textarea rows="5" cols="30" name="goodsMemo"></textarea></td>
 			</tr>
 			<tr>
 				<td>상품 타입</td>
@@ -42,7 +39,7 @@
 			</tr>
 			<tr>
 				<td>상단 등록 레벨</td>
-				<td><input type="text" name="goodsImg"></td>
+				<td><input type="text" name="hit"></td>
 			</tr>
 			<tr>
 				<td>상품 이미지</td>

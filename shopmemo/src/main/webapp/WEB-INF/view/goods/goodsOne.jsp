@@ -8,12 +8,11 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>상품 상세정보</h1>
+	<h1>상품 상세정보(고객)</h1>
 	<input type="hidden" name="goodsCode" value="${m.goodsCode}">
 	<c:forEach var="m" items="${list}" varStatus="s">
 		<table border="1">
 			<tr>
-				<!-- 상품사진 가져오는것 아직 미완성 -->
 				<td rowspan="4">
 					<img src="${pageContext.request.contextPath}/upload/${m.filename}" width="200" height="200">
 				</td>
@@ -28,20 +27,13 @@
 				<td>상품 가격</td>
 				<td>${m.goodsPrice}원</td>
 			</tr>
-			<tr>
-				<td>상품 설명</td>
-				<td>${m.goodsMemo}</td>
-			</tr>
+			<!-- soldout Y 체크시 품절 상태이므로 상태란에 품절메세지 뜨고 장바구니,바로구매 기능 비활성화 기능 구현해야함 -->
 		</table>
 	</c:forEach>
+	<!-- 페이지 분기해서 customer 페이지에서 보이는 메뉴 아직 구현X-->
 	<div>
-		<button type="button"><a href="">장바구니</a></button>
-		<button type="button"><a href="">바로구매</a></button>
-	</div>
-	<!-- 중간관리자 이상만 보이도록 설정해야함 -->
-	<div>
-		<button type="button"><a href="">수정</a></button>
-		<button type="button"><a href="">삭제</a></button>
+		<button type="button" onclick="">장바구니</button>
+		<button type="button" onclick="">바로구매</button>
 	</div>
 </body>
 </html>

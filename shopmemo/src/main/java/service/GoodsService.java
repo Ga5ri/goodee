@@ -17,33 +17,42 @@ public class GoodsService {
 	private GoodsDao goodsDao;
 	private GoodsImgDao goodsImgDao;
 	// 상품 수정
-	public int modifyGoods(Goods pramGoods) {
+	public int modifyGoods(Goods goods, GoodsImg goodsImg, String dir) {
 		int row = 0;
 		Connection conn = null;
 		goodsDao = new GoodsDao();
+		goodsImgDao = new GoodsImgDao();
 		try {
 			conn = DBUtil.getConnection();
-			System.out.println("db접속(modify)");
-			row = goodsDao.updateGoods(conn, paramGoods);
+			conn.setAutoCommit(false);
+			
+			HashMap<String, Integer> map = goodsDao.modifyGoods(conn, goods);
+			
+			goodsImg.setGoodsCode(map.get("autoKey"));
+			row = goodsImgDao.modifyGoods(conn, goodsImg);
 			conn.commit();
 		} catch (Exception e) {
 			try {
 				conn.rollback();
-			} catch (Exception e2) {
-				e2.printStackTrace();
+				File f = new File(dir+"//"+goodsImg.getFilename());
+				if(f.exists()) {
+					f.delete();
+				}
+			} catch (SQLException e1) {
+				e1.printStackTrace();
 			}
-			e.printStackTrace();
 		} finally {
 			try {
 				conn.close();
-			} catch (Exception e2) {
-				e2.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 		return row;
 	}
+		
 	
-	// 굿즈리스트
+	// 상품 리스트
 	public ArrayList<HashMap<String, Object>> getItemList() {
 		ArrayList<HashMap<String, Object>> list = null;
 		Connection conn = null;
@@ -71,7 +80,7 @@ public class GoodsService {
 		return list;
 	}
 	
-	// 굿즈상세보기
+	// 상품 상세보기
 	public ArrayList<HashMap<String, Object>> getGoodsOne(int goodsCode) {
 		ArrayList<HashMap<String, Object>> list = null;
 		Connection conn = null;
@@ -81,7 +90,6 @@ public class GoodsService {
 			conn.setAutoCommit(false);
 			goodsDao = new GoodsDao();
 			list = goodsDao.selectGoodsOne(conn, goodsCode);
-			System.out.println("Service굿즈코드->>"+goodsCode);
 			conn.commit();
 		} catch(Exception e) {
 			try {
@@ -167,7 +175,6 @@ public class GoodsService {
 				e2.printStackTrace();
 			}
 		}
-		System.out.println(row+"<-servicerow값");
 		return row;
 	}
 }
