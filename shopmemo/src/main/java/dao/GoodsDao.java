@@ -10,7 +10,7 @@ import java.util.HashMap;
 import vo.Goods;
 
 public class GoodsDao {
-	// 상품 수정(INNER JOIN UPDATE로 변경해보기)
+	// 상품 수정 진행중~
 	public HashMap<String, Integer> modifyGoods(Connection conn, Goods goods) throws Exception {
 		int row = 0;
 		String sql = "UPDATE goods SET goods_name = ?, goods_price = ?"
@@ -34,23 +34,80 @@ public class GoodsDao {
 		return map;
 	}
 	
-	// 상품 목록(INNER JOIN)
-	public ArrayList<HashMap<String, Object>> selectItemList(Connection conn) throws Exception {
+	// 검색 상품 목록
+	public ArrayList<HashMap<String, Object>> selectSearchItemList(Connection conn, int beginRow, int rowPerPage, String searchWord) throws Exception {
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();
-		String sql = "SELECT gs.goods_code goodsCode, gs.goods_name goodsName, gs.goods_price goodsPrice, img.filename filename"
-				+ 	" FROM goods gs INNER JOIN goods_img img"
-				+ 	" ON gs.goods_code = img.goods_code";
+		String sql = "SELECT r.rnum rnum, r.goods_code goodsCode, r.goods_name goodsName"
+				+ 	" , r.goods_price goodsPrice, r.createdate createdate, img.filename filename"
+				+ 	" FROM (SELECT ROW_NUMBER() OVER(ORDER BY goods_code DESC) rnum"
+				+ 		", goods_code, goods_name, goods_price, createdate FROM goods) r LEFT OUTER JOIN goods_img img"
+				+ 	" ON r.goods_code = img.goods_code"
+				+ 	" WHERE rnum BETWEEN ? AND ?"
+				+ 	" AND goods_name LIKE ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, beginRow);
+		stmt.setInt(2, rowPerPage);
+		stmt.setString(3, "%"+searchWord+"%");
 		ResultSet rs = stmt.executeQuery();
 		while(rs.next()) {
 			HashMap<String, Object> m = new HashMap<String, Object>();
 			m.put("goodsCode", rs.getInt("goodsCode"));
 			m.put("goodsName", rs.getString("goodsName"));
 			m.put("goodsPrice", rs.getInt("goodsPrice"));
+			m.put("createdate", rs.getString("createdate"));
 			m.put("filename", rs.getString("filename"));
 			list.add(m);
 		}
 		return list;
+	}
+	// 상품 목록(페이징)
+	public ArrayList<HashMap<String, Object>> selectItemList(Connection conn, int beginRow, int rowPerPage) throws Exception {
+		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();
+		String sql = "SELECT r.rnum rnum, r.goods_code goodsCode, r.goods_name goodsName"
+				+ 	" , r.goods_price goodsPrice, r.createdate createdate, img.filename filename"
+				+ 	" FROM (SELECT ROW_NUMBER() OVER(ORDER BY goods_code DESC) rnum"
+				+ 		", goods_code, goods_name, goods_price, createdate FROM goods) r LEFT OUTER JOIN goods_img img"
+				+ 	" ON r.goods_code = img.goods_code"
+				+ 	" ORDER BY createdate DESC LIMIT ?, ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, beginRow);
+		stmt.setInt(2, rowPerPage);
+		ResultSet rs = stmt.executeQuery();
+		while(rs.next()) {
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("goodsCode", rs.getInt("goodsCode"));
+			m.put("goodsName", rs.getString("goodsName"));
+			m.put("goodsPrice", rs.getInt("goodsPrice"));
+			m.put("createdate", rs.getString("createdate"));
+			m.put("filename", rs.getString("filename"));
+			list.add(m);
+		}
+		return list;
+	}
+	
+	// 검색된 상품 전체 수(페이징)
+	public int goodsCount(Connection conn, String searchWord) throws Exception {
+		int cnt = 0;
+		String sql = "SELECT COUNT(*) cnt FROM goods WHERE goods_name LIKE ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, "%"+searchWord+"%");
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			cnt = rs.getInt("cnt");
+		}
+		return cnt;
+	}
+	
+	// 상품 전체 수(페이징)
+	public int goodsCount(Connection conn) throws Exception {
+		int cnt = 0;
+		String sql = "SELECT COUNT(*) cnt FROM goods";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			cnt = rs.getInt("cnt");
+		}
+		return cnt;
 	}
 	
 	// 상품 상세정보(INNER JOIN)
@@ -80,28 +137,9 @@ public class GoodsDao {
 		return list;
 	}
 	
-	/*
-	// 상품 상세보기
-	public Goods selectGoodsOne(Connection conn, int goodsCode) throws Exception {
-		Goods goods = new Goods();
-		String sql = "SELECT goods_code goodsCode, goods_name goodsName, goods_price goodsPrice, goods_memo goodsMemo, createdate FROM goods WHERE goods_code=?";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, goodsCode);
-		ResultSet rs = stmt.executeQuery();
-		while(rs.next()) {
-			goods.setGoodsCode(rs.getInt("goodsCode"));
-			goods.setGoodsName(rs.getString("goodsName"));
-			goods.setGoodsMemo(rs.getString("goodsMemo"));
-			goods.setGoodsPrice(rs.getInt("goodsPrice"));
-			goods.setCreatedate(rs.getString("createdate"));
-		}
-		return goods;
-	}
-	*/
-	
 	// 상품추가
 	public HashMap<String, Integer> insertItem(Connection conn, Goods goods) throws Exception {
-		String sql = "INSERT INTO goods(goods_name, goods_price, soldout, emp_id, createdate) VALUES(?,?,?,?,?,NOW())";
+		String sql = "INSERT INTO goods(goods_name, goods_price, soldout, emp_id, createdate) VALUES(?,?,?,?,NOW())";
 		// PreparedStatement.RETURN_GENERATED_KEYS 쿼리실행 후 생성된 auto_increment값을 ResultSet에 반환
 		PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 		stmt.setString(1, goods.getGoodsName());

@@ -8,7 +8,7 @@
 <body>
 	<!-- 중간관리자 이상만 가능한 기능 -->
 	<h1>상품등록</h1>
-	<form action="${pageContext.request.contextPath}/AddGoodsController" enctype="multipart/form-data" method="post" >
+	<form action="${pageContext.request.contextPath}/goods/addGoods" enctype="multipart/form-data" method="post" >
 		<table border="1">
 			<tr>
 				<td>상품 등록자 ID</td>
