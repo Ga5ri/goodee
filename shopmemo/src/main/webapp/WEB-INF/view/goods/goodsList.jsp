@@ -11,7 +11,7 @@
 		<jsp:include page = "/WEB-INF/view/inc/menu.jsp"></jsp:include>
 	</div>
 	<h1>상품목록(고객)</h1>
-	<!-- 페이지 당 글 갯수 -->
+	<!-- 페이지 당 글 갯수 구현중.. -->
 	<div>
 		<form method="get" action="${pageContext.request.contextPath}/goods/goodsList">
 			<select name="rowPerPage" id="rowPerPage">
@@ -43,6 +43,7 @@
 	<table border="1">
 		<tr>
 			<c:forEach var="m" items="${list}" varStatus="s">
+				<!-- 테이블 td 5개씩 줄바꿈 -->
 				<c:if test="${s.index != 0 && s.index % 5 == 0}">
 					</tr><tr>
 				</c:if>
