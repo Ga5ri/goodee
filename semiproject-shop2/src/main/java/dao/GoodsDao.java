@@ -8,30 +8,27 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import vo.Goods;
+import vo.GoodsImg;
 
 public class GoodsDao {
 	// 상품 수정 진행중~
-	public HashMap<String, Integer> modifyGoods(Connection conn, Goods goods) throws Exception {
+	public int modifyGoods(Connection conn, Goods goods, String filename) throws Exception {
 		int row = 0;
-		String sql = "UPDATE goods SET goods_name = ?, goods_price = ?"
-				+ 	" , soldout = ?, hit = ?, createdate = NOW() WHERE goods_code = ?";
+		String sql = "UPDATE goods gs INNER JOIN goods_img img"
+				+ 	" ON gs.goods_code = img.goods_code"
+				+ 	" SET gs.goods_name = ?, gs.goods_price = ?, gs.soldout = ?"
+				+ 	" , gs.hit = ?, gs.createdate = NOW(), img.filename = ?"
+				+ 	" WHERE gs.goods_code = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, goods.getGoodsName());
 		stmt.setInt(2, goods.getGoodsPrice());
 		stmt.setString(3, goods.getSoldout());
 		stmt.setString(4, goods.getHit());
-		stmt.setInt(5, goods.getGoodsCode());
-		ResultSet rs = stmt.getGeneratedKeys();
-		int autoKey = 0;
-		if(rs.next()) {
-			autoKey = rs.getInt(1); // stmt.executeUpdate(); 생성된 auto_increment값이 대입
-			System.out.println(autoKey+"<-오토키값");
-		}
-		
-		HashMap<String, Integer> map = new HashMap<String, Integer>();
-		map.put("row", row);
-		map.put("autoKey", autoKey);
-		return map;
+		stmt.setString(5, filename);
+		stmt.setInt(6, goods.getGoodsCode());
+		row = stmt.executeUpdate();
+		System.out.println(row + " <-- goodsDao");
+		return row;
 	}
 	
 	// 검색 상품 목록
@@ -39,14 +36,16 @@ public class GoodsDao {
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();
 		String sql = "SELECT r.rnum rnum, r.goods_code goodsCode, r.goods_name goodsName"
 				+ 	" , r.goods_price goodsPrice, r.createdate createdate, img.filename filename"
-				+ 	" FROM (SELECT ROW_NUMBER() OVER(ORDER BY goods_code DESC) rnum"
-				+ 		", goods_code, goods_name, goods_price, createdate FROM goods WHERE goods_name LIKE ?) r LEFT OUTER JOIN goods_img img"
+				+ 		" FROM (SELECT ROW_NUMBER() OVER(ORDER BY goods_code DESC) rnum"
+				+ 		" , goods_code, goods_name, goods_price, createdate "
+				+ 				" FROM goods WHERE goods_name LIKE ?) r "
+				+ 	" LEFT OUTER JOIN goods_img img"
 				+ 	" ON r.goods_code = img.goods_code"
 				+ 	" WHERE rnum BETWEEN ? AND ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, beginRow);
-		stmt.setInt(2, rowPerPage);
-		stmt.setString(3, "%"+searchWord+"%");
+		stmt.setString(1, "%"+searchWord+"%");
+		stmt.setInt(2, beginRow);
+		stmt.setInt(3, rowPerPage);
 		ResultSet rs = stmt.executeQuery();
 		while(rs.next()) {
 			HashMap<String, Object> m = new HashMap<String, Object>();
@@ -64,8 +63,9 @@ public class GoodsDao {
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();
 		String sql = "SELECT r.rnum rnum, r.goods_code goodsCode, r.goods_name goodsName"
 				+ 	" , r.goods_price goodsPrice, r.createdate createdate, img.filename filename"
-				+ 	" FROM (SELECT ROW_NUMBER() OVER(ORDER BY goods_code DESC) rnum"
-				+ 		", goods_code, goods_name, goods_price, createdate FROM goods) r LEFT OUTER JOIN goods_img img"
+				+ 		" FROM (SELECT ROW_NUMBER() OVER(ORDER BY goods_code DESC) rnum"
+				+ 			" , goods_code, goods_name, goods_price, createdate "
+				+ 				" FROM goods) r LEFT OUTER JOIN goods_img img"
 				+ 	" ON r.goods_code = img.goods_code"
 				+ 	" ORDER BY createdate DESC LIMIT ?, ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
@@ -113,9 +113,9 @@ public class GoodsDao {
 	public ArrayList<HashMap<String, Object>> selectGoodsOne(Connection conn, int goodsCode) throws Exception {
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();
 		String sql = "SELECT gs.goods_code goodsCode, gs.goods_name goodsName"
-					+ 	" , gs.goods_price goodsPrice, gs.hit hit, gs.soldout soldout"
+					+ 	" , gs.goods_price goodsPrice, gs.emp_id empId, gs.hit hit, gs.soldout soldout"
 					+ 	" , img.filename filename, img.content_type contentType, img.origin_name originName"
-					+ 	" FROM goods gs INNER JOIN goods_img img"
+					+ 		" FROM goods gs INNER JOIN goods_img img"
 					+ 	" ON gs.goods_code = img.goods_code"
 					+ 	" WHERE gs.goods_code = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
@@ -126,11 +126,12 @@ public class GoodsDao {
 			m.put("goodsCode", rs.getInt("goodsCode"));
 			m.put("goodsName", rs.getString("goodsName"));
 			m.put("goodsPrice", rs.getInt("goodsPrice"));
+			m.put("empId", rs.getString("empId"));
+			m.put("hit", rs.getString("hit"));
+			m.put("soldout", rs.getString("soldout"));
 			m.put("filename", rs.getString("filename"));
 			m.put("contentType", rs.getString("contentType"));
-			m.put("hit", rs.getString("hit"));
 			m.put("originName", rs.getString("originName"));
-			m.put("soldout", rs.getString("soldout"));
 			list.add(m);
 		}
 		return list;

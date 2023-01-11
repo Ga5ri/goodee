@@ -80,7 +80,6 @@ public class GoodsService {
 			conn = DBUtil.getConnection();
 			goodsDao = new GoodsDao();
 			cnt = goodsDao.goodsCount(conn, searchWord);
-			System.out.println("cnt 값: "+cnt);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -114,13 +113,42 @@ public class GoodsService {
 		return cnt;
 	}
 	
+	// 상품 수정
+	public int modifyGoods(Goods goods, String filename) {
+		int row = 0;
+		Connection conn = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			conn.setAutoCommit(false);
+			GoodsDao goodsDao = new GoodsDao();
+			row = goodsDao.modifyGoods(conn, goods, filename);
+			conn.commit();
+		} catch (Exception e) {		
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return row;
+	}
+	
 	// 상품 상세보기
 	public ArrayList<HashMap<String, Object>> getGoodsOne(int goodsCode) {
 		ArrayList<HashMap<String, Object>> list = null;
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
-			System.out.println("db 접속(goodsList)");
+			System.out.println("db 접속(goodsOne)");
 			conn.setAutoCommit(false);
 			goodsDao = new GoodsDao();
 			list = goodsDao.selectGoodsOne(conn, goodsCode);
