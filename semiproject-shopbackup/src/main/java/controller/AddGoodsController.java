@@ -27,6 +27,7 @@ public class AddGoodsController extends HttpServlet {
 		Emp loginEmp = (Emp)session.getAttribute("loginEmp");
 		System.out.println(loginEmp+"<-로그인한사람");
 		
+		// 유효성 검사
 		if(loginEmp == null) {
 			response.sendRedirect(request.getContextPath()+"/login");
 			return;
@@ -38,8 +39,6 @@ public class AddGoodsController extends HttpServlet {
 		request.getRequestDispatcher("/WEB-INF/view/goods/addGoods.jsp").forward(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		request.setCharacterEncoding("utf-8"); // 한글 인코딩
-
 		// MultipartRequest에 들어갈 매개변수
 		String dir = request.getServletContext().getRealPath("/upload");
 		int maxFileSize = 1024 * 1024 * 100;
@@ -50,12 +49,12 @@ public class AddGoodsController extends HttpServlet {
 		
 		// mreq 정보 불러오기
 		int price = Integer.parseInt(mreq.getParameter("goodsPrice"));
-		System.out.println(price+"<-상품가격");
+		// System.out.println(price+"<-상품가격");
 		String goodsName = mreq.getParameter("goodsName");
 		String soldout = mreq.getParameter("soldout");
 		String empId = mreq.getParameter("empId");
 		String fileName = mreq.getFilesystemName("goodsImg"); // 서버에 실제 업로드된 파일명
-		System.out.println("fileName :"+fileName);
+		// System.out.println("fileName :"+fileName);
 		String contentType = mreq.getContentType("goodsImg"); // 파일형태
 		String originName = mreq.getOriginalFileName("goodsImg"); // 클라이언트가 업로드한 파일 원본
 

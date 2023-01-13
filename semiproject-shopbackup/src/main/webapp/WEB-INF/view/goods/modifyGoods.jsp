@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!-- 숫자 표시에 콤마 찍기위한 포맷 -->
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,7 +30,7 @@
 				</tr>
 				<tr>
 					<td>상품 가격</td>
-					<td><input type="number" name="goodsPrice" value="${m.goodsPrice}"></td>
+					<td><input type="text" name="goodsPrice" value="${m.goodsPrice}"></td>
 				</tr>
 				<tr>
 					<td>상품 재고(Y선택시 품절)</td>
@@ -44,7 +45,7 @@
 				</tr>
 				<tr>
 					<td>상품 이미지</td>
-					<td><input type="file" name="goodsImg"></td>
+					<td><input type="file" name="goodsImg" value="${m.filename}"></td>
 				</tr>
 			</table>
 		</c:forEach>

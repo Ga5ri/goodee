@@ -21,14 +21,12 @@ public class ModifyNoticeController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 관리자만 진입가능
 		HttpSession session = request.getSession();
-		
-		// 로그인 값 체크
 		Emp loginEmp = (Emp)session.getAttribute("loginEmp");
-		System.out.println(loginEmp.toString()+"<-- loginEmp");
+		System.out.println(loginEmp+"<-로그인한사람");
 		
 		// 값 받아오기
 		int noticeCode = Integer.parseInt(request.getParameter("noticeCode"));
-		System.out.println("noticecode 값 :"+noticeCode);
+		// System.out.println("noticecode 값 :"+noticeCode);
 		// 호출
 		noticeService = new NoticeService();
 		ArrayList<Notice> list = null;
@@ -43,7 +41,29 @@ public class ModifyNoticeController extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setCharacterEncoding("utf-8"); // 한글 인코딩
 
+		// 값 받아오기
+		int noticeCode = Integer.parseInt(request.getParameter("noticeCode"));
+		String noticeTitle = request.getParameter("noticeTitle");
+		String noticeContent = request.getParameter("noticeContent");
+		String empId = request.getParameter("empId");
+		
+		// 호출
+		Notice notice = new Notice();
+		notice.setNoticeCode(noticeCode);
+		notice.setNoticeTitle(noticeTitle);
+		notice.setNoticeContent(noticeContent);
+		notice.setEmpId(empId);
+		
+		NoticeService noticeService = new NoticeService();
+		int row = noticeService.modifyNotice(notice);
+		if(row == 1) {
+			System.out.println("공지 수정 성공!");
+		} else {
+			System.out.println("공지 수정 실패!");
+		}
+		response.sendRedirect(request.getContextPath()+"/notice/noticeOne?noticeCode="+noticeCode);
 	}
 
 }

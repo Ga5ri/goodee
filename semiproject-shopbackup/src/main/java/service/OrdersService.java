@@ -83,7 +83,7 @@ public class OrdersService {
 		return list;
 	}
 	
-	// 페이징을 위한 BoardList 수 수하기
+	// 페이징을 위한 OrderList 수 수하기
 	public int cntOrderListServie(String customerId) {
 		int resultCnt = 0;
 		orderDao = new OrderDao();
@@ -110,7 +110,7 @@ public class OrdersService {
 		return resultCnt;
 	}
 	
-	// 페이징+검색을 위한 BoardList 수 수하기
+	// 페이징+검색을 위한 OrderList 수 수하기
 	public int cntOrderListServie(String customerId, String word) {
 		int resultCnt = 0;
 		orderDao = new OrderDao();
@@ -219,7 +219,7 @@ public class OrdersService {
 		return goods;
 	}
 	
-	// 주문상세보기
+	// 주문상세보기 -- 수정중
 	public Orders getOtderOne(int boardNo,  String customerId) {
 		orderDao = new OrderDao();
 		Connection conn = null;
@@ -257,39 +257,12 @@ public class OrdersService {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
 			row = orderDao.addOrder(conn, orders);
-			System.out.println(row + " : 1차");
+			System.out.println(row + " : 1차 주문");
 			orderCode = orderDao.selectOrderForPoint(conn, orders.getCustomerId());
-			System.out.println(row + " : 2차");
+			System.out.println(orderCode + " : 2차 주문생성 후 주문번호 가져오기");
 			pointHistory.setOrderCode(orderCode);
 			row = pointDao.addPointHistory(conn, pointHistory);
-			System.out.println(row + " : 3차");
-			conn.commit();
-		} catch (Exception e) {
-			try {
-				conn.rollback();
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
-			e.printStackTrace();
-		} finally {
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return row;
-	}
-	
-	// 주문수정(배송 전까지만 가능)
-	public int updateOrderService(Orders orders) {
-		orderDao = new OrderDao();
-		Connection conn = null;
-		int row = 0;
-		try {
-			conn = DBUtil.getConnection();
-			conn.setAutoCommit(false);
-			row = orderDao.updateOrderList(conn, orders);
+			System.out.println(row + " : 3차 포인트 기록");
 			conn.commit();
 		} catch (Exception e) {
 			try {
@@ -309,14 +282,14 @@ public class OrdersService {
 	}
 	
 	// 주문취소(배송 전까지만 가능)
-	public int deleteOrderService(Orders orders) {
+	public int deleteOrderService(Orders orders, String customerId) {
 		orderDao = new OrderDao();
 		Connection conn = null;
 		int row = 0;
 		try {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
-			row = orderDao.deleteOrderList(conn, orders);
+			row = orderDao.deleteOrderList(conn, orders, customerId);
 			conn.commit();
 		} catch (Exception e) {
 			try {
@@ -333,6 +306,5 @@ public class OrdersService {
 			}
 		}
 		return row;
-	}	
-
+	}
 }

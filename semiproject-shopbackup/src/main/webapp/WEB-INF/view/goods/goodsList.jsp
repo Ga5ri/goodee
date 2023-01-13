@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!-- 숫자 표시에 콤마 찍기위한 포맷 -->
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,10 +20,10 @@
 		</div>
 	</form>
 	<!-- 정렬 기능구현 진행중 -->
-	<select>
-		<option>낮은가격순</option>
-		<option>높은가격순</option>
-		<option>최신등록순</option>
+	<select name="category">
+		<option value="dPirce">낮은가격순</option>
+		<option value="uPrice">높은가격순</option>
+		<option value="nCreatedate">최신등록순</option>
 	</select>	
 	<table border="1">
 		<tr>
@@ -39,7 +41,7 @@
 							${m.goodsName}
 						</a>
 					</div>
-					<div>${m.goodsPrice}원</div>
+					<div><fmt:formatNumber value="${m.goodsPrice}" pattern="#,###"/>원</div>
 				</td>		
 			</c:forEach>
 		</tr>

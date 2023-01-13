@@ -5,24 +5,94 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
+	<style>
+		body {
+		  padding:1.5em;
+		  background: #f5f5f5
+		}
+		
+		table {
+		  border: 1px #a39485 solid;
+		  font-size: .9em;
+		  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+		  width: 100%;
+		  border-collapse: collapse;
+		  border-radius: 5px;
+		  overflow: hidden;
+		}
+		
+		th {
+		  text-align: left;
+		}
+		  
+		thead {
+		  font-weight: bold;
+		  color: #fff;
+		  background: green;
+		}
+		  
+		 td, th {
+		  padding: 1em .5em;
+		  vertical-align: middle;
+		}
+		  
+		 td {
+		  border-bottom: 1px solid rgba(0,0,0,.1);
+		  background: #fff;
+		}
+		
+		a {
+		  color: #73685d;
+		  text-decoration: none;
+		}
+		
+		.a1 { 
+		  color: orange;
+		  text-decoration: none;
+		}
+		.a2 { 
+		  color: blue;
+		  text-decoration: none;
+		}
+	</style>
+	
+	
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-		<script>
-			<!--변경 확인 -->
-			$(document).ready(function() {
-				$('#rowPerPage').change(function() {
-					$('#pageForm').submit();
-					alert('change');
-				})
-				$('#category').change(function() {
-					$('#pageForm').submit();
-					alert('change');
-				})
-				$('#sort').change(function() {
-					$('#pageForm').submit();
-					alert('change');
-				})
-			});
-		</script>
+	<script>
+		<!--변경 확인 -->
+		$(document).ready(function() {
+			$('#rowPerPage').change(function() {
+				$('#pageForm').submit();
+				alert('change');
+			})
+			$('#category').change(function() {
+				$('#pageForm').submit();
+				alert('change');
+			})
+			$('#sort').change(function() {
+				$('#pageForm').submit();
+				alert('change');
+			})
+			
+		<!-- 상품검색값 유효성체크 -->
+		$('#searchBtn').click(function() {
+			// 검색값 미입력시
+			if( ($('#word').val().length) < 1 )  {
+				alert('검색값이 없습니다.');
+				$('#word').focus();
+				return;
+			}
+			// 검색값 공백만 입력시
+			if($('#word').val().trim() == '')  {
+				alert('공백만 입력할 수 없습니다.');
+				$('#word').text('');
+				$('#word').focus();
+				return;
+			} 
+			$('#pageForm').submit();
+		});
+	});
+	</script>
 	</head>
 	<body>
 		<header>
@@ -34,7 +104,7 @@
 		</header>
 		
 		<!-- 상단 제목 -->
-		<h2>고객센터(관리자 페이지)</h2>
+		<h2 align="center">고객센터(관리자 페이지)</h2>
 		
 		<div>
 			<!--정렬/ 검색 기능 / 페이지당 출력수 / 답변전후 -->
@@ -97,36 +167,47 @@
 								<option value="기타" selected="selected">기타</option>
 						</c:if>
 					</select>  
-					<!-- 검색 기능(search: 주문번호 / 고객ID / 사원 ID)-->
+					<!-- 검색 기능(search: 주문번호 / 상품명 / 고객ID / 사원 ID)-->
 					<select name="search" id="search" value="${search}">
 						<c:if test="${search == ('search')}">
 							<option value="search" selected="selected">-선택-</option>
-							<option value="ordersCode" >주문번호</option>
+							<option value="orderCode" >주문번호</option>
+							<option value="goodsName" >상품명</option>
 							<option value="customerId">고객ID</option>
 							<option value="empId">사원ID</option>
 						</c:if>
-						<c:if test="${search eq 'ordersCode'}">
+						<c:if test="${search eq 'orderCode'}">
 							<option value="search" >-선택-</option>
-							<option value="ordersCode" selected="selected">주문번호</option>
+							<option value="orderCode" selected="selected">주문번호</option>
+							<option value="goodsName" >상품명</option>
+							<option value="customerId">고객ID</option>
+							<option value="empId">사원ID</option>
+						</c:if>
+						<c:if test="${search eq 'goodsName'}">
+							<option value="search" >-선택-</option>
+							<option value="orderCode" >주문번호</option>
+							<option value="goodsName" selected="selected">상품명</option>
 							<option value="customerId">고객ID</option>
 							<option value="empId">사원ID</option>
 						</c:if>
 						<c:if test="${search eq 'customerId'}">
 							<option value="search" >-선택-</option>
-							<option value="ordersCode" >주문번호</option>
+							<option value="orderCode" >주문번호</option>
+							<option value="goodsName" >상품명</option>
 							<option value="customerId" selected="selected">고객ID</option>
 							<option value="empId">사원ID</option>
 						</c:if>
 						<c:if test="${search eq 'empId'}">
 							<option value="search" >-선택-</option>
-							<option value="ordersCode" >주문번호</option>
+							<option value="orderCode" >주문번호</option>
+							<option value="goodsName" >상품명</option>
 							<option value="customerId">고객ID</option>
 							<option value="empId" selected="selected">사원ID</option>
 						</c:if>
 					</select>
 					<label for="word"> search : </label>
 					<input type="text" name="word" id="word" value="${word}">
-					<button type="submit">search</button>
+					<button id="searchBtn"type="button">search</button>
 					
 					<!--  페이지당 출력수(10,20,30) -->
 					<select name="rowPerPage" id="rowPerPage">
@@ -157,9 +238,10 @@
 				<tr>
 					<th>문의번호</th>
 					<th>주문번호</th>
+					<th>카테고리</th>
+					<th>상품명</th>
 					<th>고객ID</th>
-					<th>category</th>
-					<th>questionMemo</th>
+					<th>문의내용</th>
 					<th>createdate</th>
 					<th>상태</th>
 					<th>작성자</th>
@@ -171,9 +253,10 @@
 					<c:forEach var="q" items="${questionlist}">
 						<tr>
 							<td>${q.questionCode}</td>
-							<td>${q.ordersCode}</td>
-							<td>${q.customerId}</td>
+							<td>${q.orderCode}</td>
 							<td>${q.category}</td>
+							<td>${q.goodsName}</td>
+							<td>${q.customerId}</td>
 							<td>
 								${q.questionMemo}	
 							</td>
@@ -183,7 +266,7 @@
 										답변전
 								</c:if> 
 								<c:if test="${q.commentMemo != null}">
-									<a href="${pageContext.request.contextPath}/questionComment/questionCommentOne?questionCode=${q.questionCode}">
+									<a class="a2" href="${pageContext.request.contextPath}/questionComment/questionCommentOne?questionCode=${q.questionCode}">
 										답변완료
 									</a>
 								</c:if> 
@@ -206,7 +289,7 @@
 							</td>
 							<td>
 								<c:if test="${q.empId == null}">
-									<a href="${pageContext.request.contextPath}/questionComment/addQuestionComment?questionCode=${q.questionCode}">
+									<a class="a1" href="${pageContext.request.contextPath}/questionComment/addQuestionComment?questionCode=${q.questionCode}">
 										작성하기
 									</a>
 								</c:if> 
@@ -221,7 +304,7 @@
 			</div>
 			<br>
 			<!-- 페이징 -->
-			<div>
+			<div align="center">
 				<!-- 첫 페이지 -->
 				<a href="${pageContext.request.contextPath}/questionComment/questionCommentList?currentPage=1&rowPerPage=${rowPerPage}&word=${word}&search=${search}&category=${category}&sort=${sort}">처음</a>
 				

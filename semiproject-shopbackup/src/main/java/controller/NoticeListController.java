@@ -31,9 +31,9 @@ public class NoticeListController extends HttpServlet {
 		int totalCnt = 0;
 		
 		list = noticeService.getNoticeList(beginRow, rowPerPage);
-		System.out.println(list+"<-list");
+		// System.out.println(list+"<-list");
 		totalCnt = noticeService.noticeCount();
-		System.out.println(totalCnt+"<-totalCnt값");
+		// System.out.println(totalCnt+"<-totalCnt값");
 		
 		int lastPage = totalCnt / rowPerPage;
 		if(totalCnt % rowPerPage != 0) {

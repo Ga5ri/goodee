@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -35,10 +36,20 @@
 					</a>
 					
 					<span>&nbsp;</span>
-					
-					<a href = "${pageContext.request.contextPath }/goods/goodsList">
-						상품리스트
-					</a>
+					<!-- authCode 수정되면 eq뒤에 값 1로 변경예정 -->
+					<c:choose>
+						<c:when test="${loginEmp != null && loginEmp.empId eq 'compuzone'}">
+							<a href = "${pageContext.request.contextPath }/goods/goodsListByCompany">
+								사업자용리스트
+							</a>
+						</c:when>
+						<c:otherwise>
+							<a href = "${pageContext.request.contextPath }/goods/goodsList">
+								상품리스트
+							</a>
+						</c:otherwise>
+					</c:choose>
+
 					
 					<span>&nbsp;</span>
 					
@@ -49,7 +60,7 @@
 					<span>&nbsp;</span>
 					
 					<a href = "${pageContext.request.contextPath }/notice/noticeList">
-						공지사항(미구현)
+						공지사항
 					</a>
 				</h3>
 			</div>

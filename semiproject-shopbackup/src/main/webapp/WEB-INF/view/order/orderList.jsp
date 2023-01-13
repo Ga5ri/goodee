@@ -79,6 +79,8 @@
 					<td>${o.orderPrice}</td>
 					<td>${o.orderState}</td>
 					<td>${o.createdate}</td>
+					
+					<td><a type="button" href="${pageContext.request.contextPath}/order/deleteOrder?orderCode=${o.orderCode}">삭제</a></td>
 				</tr>
 			</c:forEach>
 		</table>

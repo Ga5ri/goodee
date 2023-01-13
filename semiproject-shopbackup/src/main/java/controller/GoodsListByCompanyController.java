@@ -14,11 +14,25 @@ import javax.servlet.http.HttpSession;
 import service.GoodsService;
 import vo.Customer;
 import vo.Emp;
+import vo.Goods;
 
-@WebServlet("/goods/goodsList")
-public class GoodsListController extends HttpServlet {
+@WebServlet("/goods/goodsListByCompany")
+public class GoodsListByCompanyController extends HttpServlet {
 	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// 관리자만 진입가능
+		HttpSession session = request.getSession();
+		
+		// 로그인 값 체크
+		Emp loginEmp = (Emp)session.getAttribute("loginEmp");
+		
+		System.out.println(loginEmp.toString() + " <-- loginEmp");
+		
+		if(loginEmp == null || loginEmp.getAuthCode() != 0) {
+			response.sendRedirect(request.getContextPath()+"/login");
+			return;
+		}
+		
 		// 페이징
 		int currentPage = 1;
 		if(request.getParameter("currentPage") != null) {
@@ -27,21 +41,21 @@ public class GoodsListController extends HttpServlet {
 		int rowPerPage = 10;
 		int beginRow = (currentPage-1) * rowPerPage;
 
-		GoodsService goodsService = new GoodsService();
-		
 		// 상품 리스트 초기화
 		ArrayList<HashMap<String, Object>> list = null;
 		
 		int totalCnt = 0;
-		// 검색어 받기
-		String searchWord = request.getParameter("searchWord");
-		if(searchWord != null) { // 검색값이 있다면
-			list = goodsService.getItemListBySearch(beginRow, rowPerPage, searchWord);
-			totalCnt = goodsService.count(searchWord);
-		} else { // 검색값이 없다면
-			list = goodsService.getItemList(beginRow, rowPerPage);
-			totalCnt = goodsService.count();
-		}
+		String empId = loginEmp.getEmpId();
+		// 세션 authcode 수정 후 동작
+		Goods goods = new Goods();
+		goods.setEmpId(empId);
+		System.out.println("empid="+empId);
+		GoodsService goodsService = new GoodsService();
+		list = goodsService.getItemListByCompany(beginRow, rowPerPage, goods);
+		System.out.println("list는=>"+list);
+		totalCnt = goodsService.countByCompany(goods);
+
+
 		// 마지막 페이지
 		int lastPage = totalCnt / rowPerPage;
 		if(totalCnt % rowPerPage != 0) {
@@ -49,12 +63,11 @@ public class GoodsListController extends HttpServlet {
 		}
 		request.setAttribute("list", list);
 		request.setAttribute("beginRow", beginRow);
-		request.setAttribute("searchWord", searchWord);
 		request.setAttribute("rowPerPage", rowPerPage);
 		request.setAttribute("currentPage", currentPage);
 		request.setAttribute("lastPage", lastPage);
-		
-		System.out.println(searchWord + " <--searcrWord");
-		request.getRequestDispatcher("/WEB-INF/view/goods/goodsList.jsp").forward(request, response);
+
+		request.getRequestDispatcher("/WEB-INF/view/goods/goodsListByCompany.jsp").forward(request, response);
 	}
+
 }

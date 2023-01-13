@@ -17,7 +17,7 @@ public class NoticeOneController extends HttpServlet {
 	private NoticeService noticeService;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int noticeCode = Integer.parseInt(request.getParameter("noticeCode"));
-		System.out.println("noticeCode값:"+noticeCode);
+		// System.out.println("noticeCode값:"+noticeCode);
 		
 		noticeService = new NoticeService();
 		ArrayList<Notice> list = null;

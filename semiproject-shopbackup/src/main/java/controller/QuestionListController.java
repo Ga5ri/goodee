@@ -46,7 +46,11 @@ public class QuestionListController extends HttpServlet {
 		   }
 		int rowPerPage = 10;
 		int beginRow = (currentPage-1) * rowPerPage;
-		
+		String word = ("");
+		   if(request.getParameter("word") != null) {
+			   word =request.getParameter("word");
+		   } 
+		   
 		// 모델 호출
 		this.questionService = new QuestionService();
 		request.setCharacterEncoding("UTF-8"); // request 한글코딩	
@@ -56,11 +60,11 @@ public class QuestionListController extends HttpServlet {
 		int lastPage = (int)(Math.ceil((double)cnt / (double)rowPerPage));
 		
 		// 모델 리스트 및 페이징
-		ArrayList<HashMap<String, Object>> list = questionService.getQuestionListByPage(beginRow, rowPerPage);
-		
+		ArrayList<HashMap<String, Object>> list = questionService.getQuestionListByPage(beginRow, rowPerPage, word);
 		request.setAttribute("questionlist", list);
 		request.setAttribute("currentPage", currentPage); 
 		request.setAttribute("lastPage", lastPage);
+		request.setAttribute("word", word);
 		
 		// 고객센터 폼 View
 		request.getRequestDispatcher("/WEB-INF/view/question/questionList.jsp").forward(request, response);

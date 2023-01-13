@@ -33,10 +33,6 @@ public class QuestionListUserController extends HttpServlet {
 				return;
 			}
 			
-			// 세션의 ID 매개값으로 세팅
-			Customer customer = new Customer(); 
-			customer.setCustomerId("loginCustomer");
-			
 			// 페이징에 쓸 값 세팅
 			int cnt = 0;
 			int currentPage = 1;
@@ -45,23 +41,25 @@ public class QuestionListUserController extends HttpServlet {
 			   }
 			int rowPerPage = 10;
 			int beginRow = (currentPage-1) * rowPerPage;
-			
+			String word = ("");
+			   if(request.getParameter("word") != null) {
+				   word =request.getParameter("word");
+			   } 
 			// 모델 호출
 			this.questionService = new QuestionService();
 			request.setCharacterEncoding("UTF-8"); // request 한글코딩	
 			
-			// 카운트
-			cnt = questionService.count(); 
-			int lastPage = (int)(Math.ceil((double)cnt / (double)rowPerPage));
-			
 			// 모델 리스트 및 페이징
-			// 매개변수 값세팅
-			Customer customerId = loginCustomer;
-			ArrayList<HashMap<String, Object>> list = questionService.getQuestionListUserByPage(beginRow, rowPerPage, customerId);
+			ArrayList<HashMap<String, Object>> list = questionService.getQuestionListUserByPage(beginRow, rowPerPage, loginCustomer, word);
+			
+			// 카운트
+			cnt = questionService.countUser(loginCustomer); 
+			int lastPage = (int)(Math.ceil((double)cnt / (double)rowPerPage));
 			
 			request.setAttribute("questionlist", list);
 			request.setAttribute("currentPage", currentPage); 
 			request.setAttribute("lastPage", lastPage);
+			request.setAttribute("word", word);
 			
 			// 고객센터 폼 View
 			if(loginCustomer != null && loginEmp == null) {

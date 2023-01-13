@@ -24,12 +24,14 @@ public class OrderListController extends HttpServlet {
 		// 로그인 여부확인, 로그인 되어있지 않으면 홈으로 이동
 		HttpSession session = request.getSession();		
 		// 로그인 값 체크  - 비 로그인 시 로그인 창으로
-		String customerId = "test"; //(String)session.getAttribute("loginCustomer");
-		if(customerId == null) {
+		Customer loginCustomer = (Customer)session.getAttribute("loginCustomer");
+		System.out.println(loginCustomer + "아이디");
+		if(loginCustomer == null) {
 			response.sendRedirect(request.getContextPath()+"/login");
 			System.out.println("로그인 값 없음");
 			return;
 		}
+		String customerId = loginCustomer.getCustomerId();
 		
 		int currentPage = 1;
 		if(request.getParameter("currentPage") != null) {

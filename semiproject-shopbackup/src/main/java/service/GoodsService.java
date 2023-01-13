@@ -71,6 +71,35 @@ public class GoodsService {
 		}
 		return list;
 	}
+	
+	// 사업자용 상품 리스트
+	public ArrayList<HashMap<String, Object>> getItemListByCompany(int beginRow, int rowPerPage, Goods goods) {
+		ArrayList<HashMap<String, Object>> list = null;
+		Connection conn = null;
+		try {
+			conn = DBUtil.getConnection();
+			System.out.println("db 접속(goodsListByCompany)");
+			conn.setAutoCommit(false);
+			goodsDao = new GoodsDao();
+			list = goodsDao.selectItemListByCompany(conn, beginRow, rowPerPage, goods);
+			conn.commit();
+		} catch(Exception e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return list;
+	}
+	
 	// 검색한 상품리스트 페이징
 	public int count(String searchWord) {
 		GoodsDao goodsDao = new GoodsDao();
@@ -101,6 +130,27 @@ public class GoodsService {
 			conn = DBUtil.getConnection();
 			goodsDao = new GoodsDao();
 			cnt = goodsDao.goodsCount(conn);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		return cnt;
+	}
+	
+	// 사업자용 상품리스트 페이징
+	public int countByCompany(Goods goods) {
+		GoodsDao goodsDao = new GoodsDao();
+		int cnt = 0;
+		Connection conn = null;
+		try {
+			conn = DBUtil.getConnection();
+			goodsDao = new GoodsDao();
+			cnt = goodsDao.goodsCountByCompany(conn, goods);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

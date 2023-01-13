@@ -53,8 +53,6 @@ public class AddAddressController extends HttpServlet {
 			return;
 		}		
 		
-		// 인코딩 : UTF-8
-		request.setCharacterEncoding("UTF-8");
 		
 		// request
 		String customerId = loginCustomer.getCustomerId();

@@ -7,7 +7,16 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<div>
+		<jsp:include page = "/WEB-INF/view/inc/menu.jsp"></jsp:include>
+	</div>
 	<h1>공지 사항</h1>
+	<!-- 관리자 이상만 공지 작성 가능 -->
+	<c:if test="${loginEmp != null}">
+		<div>
+			<button type="button" onclick="location.href='${pageContext.request.contextPath}/notice/addNotice'">공지 추가</button>
+		</div>
+	</c:if>
 	<table border="1">
 		<tr>
 			<th>공지번호</th>

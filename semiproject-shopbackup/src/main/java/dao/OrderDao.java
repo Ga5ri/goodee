@@ -278,32 +278,11 @@ public class OrderDao {
 		return orderCode;
 	}
 	
-	// 주문수정(배송 전까지만 가능)
-	public int updateOrderList(Connection conn, Orders orders) throws Exception {
-		int row = 0;
-
-		String sql = "UPDATE orders o, point_history p"
-				+ " SET o.address_code = ?, o.order_quantity = ?, o.order_price = ?"
-				+ " p.point_kind = ?, p.point = ?"
-				+ " WHERE o.order_code = ? AND p.order_code = ?";
-		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, orders.getAddressCode());
-		stmt.setInt(2, orders.getOrderQuantity());
-		stmt.setInt(3, orders.getOrderPrice());
-		stmt.setString(4, orders.getPointKind());
-		stmt.setInt(5, orders.getPoint());
-		stmt.setInt(6, orders.getOrderCode());
-		stmt.setInt(7, orders.getOrderCode());
-			
-		row = stmt.executeUpdate();
-		return row;
-	}
-	
 	// 주문취소(배송 전까지만 가능)
-	public int deleteOrderList(Connection conn, Orders orders) throws Exception {
+	public int deleteOrderList(Connection conn, Orders orders, String customerId) throws Exception {
 		int row = 0;
 
-		String sql = "DELETE o, p FROM orders o INNER JOIN point_history p ON o.order_code = p.order_code WHERE o.order_code = ?";
+		String sql = "DELETE FROM orders WHERE order_code = ?";
 		
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, orders.getOrderCode());

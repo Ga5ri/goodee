@@ -103,6 +103,36 @@ public class GoodsDao {
 		return list;
 	}
 	
+	// 사업자용 상품 리스트(페이징)
+	public ArrayList<HashMap<String, Object>> selectItemListByCompany(Connection conn, int beginRow, int rowPerPage, Goods goods) throws Exception {
+		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();
+		String sql = "SELECT r.rnum rnum, r.goods_code goodsCode, r.goods_name goodsName"
+				+ 	" , r.goods_price goodsPrice, r.emp_id empId, r.createdate createdate, img.filename filename"
+				+ 		" FROM (SELECT ROW_NUMBER() OVER(ORDER BY goods_code DESC) rnum"
+				+ 			" , goods_code, goods_name, goods_price, emp_id, createdate "
+				+ 				" FROM goods WHERE emp_id = ?) r LEFT OUTER JOIN goods_img img"
+				+ 	" ON r.goods_code = img.goods_code"
+				+ 	" ORDER BY createdate DESC LIMIT ?, ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, goods.getEmpId());
+		stmt.setInt(2, beginRow);
+		stmt.setInt(3, rowPerPage);
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		while(rs.next()) {
+			HashMap<String, Object> m = new HashMap<String, Object>();
+			m.put("goodsCode", rs.getInt("goodsCode"));
+			m.put("goodsName", rs.getString("goodsName"));
+			m.put("goodsPrice", rs.getInt("goodsPrice"));
+			m.put("empId", rs.getString("empId"));
+			m.put("createdate", rs.getString("createdate"));
+			m.put("filename", rs.getString("filename"));
+			list.add(m);
+		}
+		return list;
+	}
+	
 	// 검색된 상품 전체 수(페이징)
 	public int goodsCount(Connection conn, String searchWord) throws Exception {
 		int cnt = 0;
@@ -122,6 +152,21 @@ public class GoodsDao {
 		String sql = "SELECT COUNT(*) cnt FROM goods";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		
+		ResultSet rs = stmt.executeQuery();
+		
+		if(rs.next()) {
+			cnt = rs.getInt("cnt");
+		}
+		return cnt;
+	}
+	
+	// 사업자용 상품 전체 수(페이징)
+	public int goodsCountByCompany(Connection conn, Goods goods) throws Exception {
+		int cnt = 0;
+		String sql = "SELECT COUNT(*) cnt FROM goods WHERE emp_id = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setString(1, goods.getEmpId());
+		System.out.println("goods.getEmpId():"+goods.getEmpId());
 		ResultSet rs = stmt.executeQuery();
 		
 		if(rs.next()) {

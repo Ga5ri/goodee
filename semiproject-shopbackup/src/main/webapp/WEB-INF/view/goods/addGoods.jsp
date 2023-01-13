@@ -16,7 +16,7 @@
 		<table border="1">
 			<tr>
 				<td>상품 등록자 ID</td>
-				<td><input type="text" name="empId" value="${m.empId}"></td>
+				<td><input type="text" name="empId" value="${loginEmp.empId}" readonly="readonly"></td>
 			</tr>
 			<tr>
 				<td>상품명</td>
@@ -24,7 +24,7 @@
 			</tr>
 			<tr>
 				<td>상품 가격</td>
-				<td><input type="number" name="goodsPrice"></td>
+				<td><input type="text" name="goodsPrice"></td>
 			</tr>
 			<tr>
 				<td>상품 재고(Y선택시 품절)</td>

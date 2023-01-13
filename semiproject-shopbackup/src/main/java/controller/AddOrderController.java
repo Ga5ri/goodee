@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import service.OrdersService;
+import service.PointService;
 import vo.Customer;
 import vo.CustomerAddress;
 import vo.Goods;
@@ -20,6 +21,7 @@ import vo.PointHistory;
 @WebServlet("/order/addOrder")
 public class AddOrderController extends HttpServlet {
 	private OrdersService ordersService;
+	private PointService pointService;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		// 로그인 여부확인, 로그인 되어있지 않으면 홈으로 이동
@@ -38,12 +40,13 @@ public class AddOrderController extends HttpServlet {
 		int goodsCode = Integer.parseInt(request.getParameter("goodsCode"));	
 		Customer customer = null;
 		ArrayList<CustomerAddress> customerAddress = null;
-		Goods goods = null;
-
+		Goods goods = null;	
+		
 		this.ordersService = new OrdersService();
 		customer = ordersService.getCustomerInfoForOrderService(customerId);
 		customerAddress = ordersService.getCustomerAddressForOrderService(customerId);
-		goods = ordersService.getGoodsForOrderService(goodsCode);
+		goods = ordersService.getGoodsForOrderService(goodsCode);		
+
 		
 		System.out.println("customer : " + customer);
 		System.out.println("customerAddress : " + customerAddress);
@@ -83,16 +86,11 @@ public class AddOrderController extends HttpServlet {
 		String createdate = request.getParameter("createdate");
 		
 		//포인트 로직 필요
-		String pointKind = null; // request.getParameter("pointKind");
-		int usePoint = Integer.parseInt(request.getParameter("point"));
-		if(usePoint == 0) { //적립
-			pointKind = "적립";
-		} else { //사용
-			pointKind = "사용";
-		}
+		String pointKind = null;
+		int usePoint = Integer.parseInt(request.getParameter("usePoint"));
+		
 		
 		Orders orders = new Orders();
-		PointHistory pointHistory = new PointHistory();
 		orders.setGoodsCode(goodsCode);
 		orders.setCustomerId(customerId);
 		orders.setAddressCode(addressCode);
@@ -101,13 +99,30 @@ public class AddOrderController extends HttpServlet {
 		orders.setOrderPrice(orderPrice);
 		orders.setOrderState(orderState);
 		orders.setCreatedate(createdate);
-		
+
+		PointHistory pointHistory = new PointHistory();
 		pointHistory.setPointKind(pointKind);
 		pointHistory.setPoint(usePoint);
 		
+
+		if(usePoint == 0) { // 적립만 point_history '적립 예정으로'
+			pointKind = "적립예정";
+			int earnPoint = Math.round(orderPrice / 100);
+			System.out.println(earnPoint);
+			pointHistory.setPointKind(pointKind);
+			pointHistory.setPoint(earnPoint);
+			
+		} else { // 포인트 사용 및 기록 : point update, pointHistory --- 수정중
+			pointKind = "사용";
+			pointHistory.setPointKind(pointKind);
+			pointHistory.setPoint(usePoint);
+			
+		}
+
 		// 모델호출
 		ordersService = new OrdersService();
 		ordersService.addOrderService(orders, pointHistory);
+		//this.pointService = new PointService();
 		System.out.println("전달"+orders);
 		
 		// view
