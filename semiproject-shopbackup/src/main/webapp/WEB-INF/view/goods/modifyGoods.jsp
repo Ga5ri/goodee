@@ -9,6 +9,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<!-- 상품 수정 -->
 	<h1>상품 수정</h1>
 	<form action="${pageContext.request.contextPath}/goods/modifyGoods" enctype="multipart/form-data" method="post">
 		<c:forEach var="m" items="${list}" varStatus="s">

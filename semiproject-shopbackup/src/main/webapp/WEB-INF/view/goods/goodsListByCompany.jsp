@@ -9,9 +9,12 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<!-- 간이 메뉴바 -->
 	<div>
 		<jsp:include page = "/WEB-INF/view/inc/menu.jsp"></jsp:include>
 	</div>
+	
+	<!-- 사업자별 상품 목록 -->
 	<h1>${loginEmp.empId}님이 등록한 상품 리스트</h1>
 	<table border="1">
 		<tr>
@@ -41,6 +44,7 @@
 			</a>
 		</c:if>
 	</div>
+	
 	<!-- 페이징 -->
 	<div>
 		<a href="${pageContext.request.contextPath}/goods/goodsListByCompany?currentPage=1">처음</a>		

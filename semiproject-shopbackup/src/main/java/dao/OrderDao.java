@@ -13,16 +13,6 @@ import vo.Orders;
 import vo.PointHistory;
 
 public class OrderDao {
-	/*
-	 * order_code
-	 * goods_code
-	 * customer_id
-	 * address_code
-	 * order_quantity
-	 * order_price
-	 * order_state
-	 * createdate
-	 */
 	// 주문목록
 	public ArrayList<Orders> selectOrderListByPage(Connection conn, int beginRow, int endRow, String customerId) throws Exception {
 		Orders o = null;
@@ -145,7 +135,7 @@ public class OrderDao {
 	// 주문 시 필요 : 고객정보
 	public Customer selectCustomerInfoForOrder (Connection conn, String customerId) throws Exception {
 		Customer customer = null;
-		System.out.println("customerId : "+customerId);
+		
 		String sql = "SELECT customer_id customerId, customer_name customerName, customer_phone customerPhone, point FROM customer c WHERE customer_id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, customerId);
@@ -258,7 +248,6 @@ public class OrderDao {
 		stmt.setInt(4, orders.getOrderQuantity());
 		stmt.setInt(5, orders.getOrderPrice());
 		stmt.setString(6, orders.getOrderState());
-		System.out.println(orders.getOrderState() + "나와라");
 		
 		row = stmt.executeUpdate();
 		return row;
@@ -279,13 +268,16 @@ public class OrderDao {
 	}
 	
 	// 주문취소(배송 전까지만 가능)
-	public int deleteOrderList(Connection conn, Orders orders, String customerId) throws Exception {
+	public int deleteOrderList(Connection conn, int orderCode, String customerId) throws Exception {
 		int row = 0;
 
-		String sql = "DELETE FROM orders WHERE order_code = ?";
+		String sql = "DELETE FROM orders WHERE order_code = ? AND customer_id = ?";
 		
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, orders.getOrderCode());
+		stmt.setInt(1, orderCode);
+		stmt.setString(2, customerId);
+		System.out.println(orderCode + ": orderCode");
+		System.out.println(customerId + ": customerId");
 			
 		row = stmt.executeUpdate();
 		return row;

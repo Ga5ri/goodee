@@ -5,43 +5,44 @@
 	<head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-		<style>
-			body {
-			  padding:1.5em;
-			  background: #f5f5f5
-			}
-			
-			table {
-			  border: 1px #a39485 solid;
-			  font-size: .9em;
-			  box-shadow: 0 2px 5px rgba(0,0,0,.25);
-			  width: 40%;
-			  border-collapse: collapse;
-			  border-radius: 5px;
-			  overflow: hidden;
-			}
-			th {
-			  text-align: center;
-			}
-			  
-			thead {
-			  font-weight: bold;
-			  color: #fff;
-			}
-			  
-			 td, th {
-			  padding: 1em .5em;
-			  vertical-align: middle;
-			}
-			  
-			 td {
-			  border-bottom: 1px solid rgba(0,0,0,.1);
-			  text-align: center
-			}
-			a {
-			  text-decoration: none;
-			}
-		</style>
+	<style>
+		body {
+		  padding:1.5em;
+		  background: #f5f5f5
+		}
+		
+		table {
+		  border: 1px #a39485 solid;
+		  font-size: .9em;
+		  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+		  width: 40%;
+		  border-collapse: collapse;
+		  border-radius: 5px;
+		  overflow: hidden;
+		}
+		th {
+		  border: 1px solid rgba(0,0,0,.1);
+		  text-align: center;
+		}
+		  
+		thead {
+		  font-weight: bold;
+		  color: #fff;
+		}
+		  
+		 td, th {
+		  padding: 1em .5em;
+		  vertical-align: middle;
+		}
+		  
+		 td {
+		  border-bottom: 1px solid rgba(0,0,0,.1);
+		  text-align: center
+		}
+		a {
+		  text-decoration: none;
+		}
+	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 	<script>
 		$(document).ready(function() {
@@ -71,46 +72,47 @@
 			<div align="center" style="padding-right: 42em"> 
 				<button onclick="history.back()">뒤로가기</button>
 			</div>
+			<br>
 			<!-- 고객센터 내용 (분류/주문번호, 문의작성일, 문의내용, 답변일, 답변내용-->
 			<div align="center">
 				<table border="1">
 				<tr>
 					<th>문의번호/카테고리</th>
+					<td>${q.category} : ${q.questionCode}</td>
 				</tr>
 				<tr>
-					<td>${q.questionCode}: ${q.category}</td>
-				</tr>
-				<tr>
-					<th>주문번호/상품명</th>
-				</tr>
-				<tr>
-					<td>${q.orderCode} : ${q.goodsName}</td>
+					<th>상품명</th>
+					<td>${q.goodsName}</td>
 				</tr>
 				<tr>
 					<th>작성일</th>
-				</tr>
-				<tr>
 					<td>${q.createdate}</td>
 				</tr>
 				<tr>
 					<th>문의내용</th>
-				</tr>
-				<tr>
 					<td>${q.questionMemo}</td>
 				</tr>
+				<!-- 첨부 파일 있을시에만 보임 -->
+				<c:if test="${q.questionImg == null}">
+					<div>&nbsp;</div>
+				</c:if> 
+				<c:if test="${q.questionImg != null}">
+					<tr>
+						<th>첨부파일</th>
+						<td>
+							<div><img src="${pageContext.request.contextPath}/upload/${q.questionImg}" width="200" height="200"></div>
+						</td>
+					</tr>
+				</c:if> 
 				<tr>
 					<th>답변일</th>
-				</tr>
-				<tr>
-					<td >
+					<td>
 						<c:if test="${q.commentMemo == null}">답변전</c:if> 
 						<c:if test="${q.commentMemo != null}">${q.commentCreatedate}</c:if> 
 					</td>
 				</tr>
 				<tr>
 					<th >답변내용</th>
-				</tr>
-				<tr>
 					<td >
 						<c:if test="${q.commentMemo == null}">답변전</c:if> 
 						<c:if test="${q.commentMemo != null}">${q.commentMemo}</c:if>

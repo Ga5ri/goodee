@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<!-- 공지사항 상세보기 -->
 	<h1>공지 세부 내용</h1>
 	<input type="hidden" name="noticeCode">
 	<c:forEach var="n" items="${list}">
@@ -24,7 +25,7 @@
 		<c:if test="${loginEmp != null}">
 			<div>
 				<button type="button" onclick="location.href='${pageContext.request.contextPath}/notice/modifyNotice?noticeCode=${n.noticeCode}'">수정</button>
-				<button type="button" onclick="location.href='${pageContext.request.contextPath}/notice/deleteNotice?noticeCode=${n.noticeCode}'">삭제</button>
+				<button type="button" onclick="location.href='${pageContext.request.contextPath}/emp/checkPw?targetUrl=/notice/deleteNotice?noticeCode=${n.noticeCode}'">삭제</button>
 			</div>
 		</c:if>
 	</c:forEach>

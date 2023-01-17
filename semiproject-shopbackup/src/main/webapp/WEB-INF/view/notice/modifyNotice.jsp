@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<!-- 공지사항 수정 -->
 	<h1>공지 수정</h1>
 	<form action="${pageContext.request.contextPath}/notice/modifyNotice" method="post">
 		<c:forEach var="n" items="${list}">

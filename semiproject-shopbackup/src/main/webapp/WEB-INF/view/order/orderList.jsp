@@ -18,6 +18,10 @@
 </script>
 </head>
 <body>
+	<!-- 간이 메뉴바 -->
+	<div>
+		<jsp:include page = "/WEB-INF/view/inc/menu.jsp"></jsp:include>
+	</div>
 	<div class = "container">
 	<h1>주문목록</h1>
 		<div class="d-flex justify-content-end">
@@ -62,12 +66,14 @@
 				<th>주문상태</th>
 				<th>주문일</th>
 				
-				<th>사용 or 적립예정 포인트</th>
-			</tr>		
+				<th>포인트</th>
+				<th>주문취소</th>
+				<th>리뷰</th>
+			</tr>
 			<c:forEach var="o" items="${orderList}">
 				<tr>
 					<td>${o.orderCode}</td>
-					<td>${o.goodsName}</td>
+					<td><a type="button" href="${pageContext.request.contextPath}/goods/goodsOne?goodsCode=${o.goodsCode}">${o.goodsName}</a></td>
 					<td>${o.goodsPrice}</td>
 					
 					<td>${o.customerId}</td>
@@ -79,8 +85,10 @@
 					<td>${o.orderPrice}</td>
 					<td>${o.orderState}</td>
 					<td>${o.createdate}</td>
-					
-					<td><a type="button" href="${pageContext.request.contextPath}/order/deleteOrder?orderCode=${o.orderCode}">삭제</a></td>
+										
+					<td>${o.point}</td>
+					<td><a type="button" href="${pageContext.request.contextPath}/order/deleteOrder?orderCode=${o.orderCode}&point=${o.point}">취소</a></td>
+					<td><a type="button" href="${pageContext.request.contextPath}/review/addReviewForm?orderCode=${o.goodsCode}">리뷰작성</a></td>
 				</tr>
 			</c:forEach>
 		</table>

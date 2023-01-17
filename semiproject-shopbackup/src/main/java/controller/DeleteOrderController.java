@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import service.OrdersService;
 import vo.Customer;
 import vo.Orders;
+import vo.PointHistory;
 
 @WebServlet("/order/deleteOrder")
 public class DeleteOrderController extends HttpServlet {
@@ -27,16 +28,22 @@ public class DeleteOrderController extends HttpServlet {
 			return;
 		}
 		String customerId = loginCustomer.getCustomerId();
+		System.out.println(customerId);
 		
-		int orderCode = 0;
-		orderCode = Integer.parseInt(request.getParameter("orderCode"));
-		
+		int orderCode = Integer.parseInt(request.getParameter("orderCode"));
+		System.out.println(orderCode);
+		int point = Integer.parseInt(request.getParameter("point"));
+		System.out.println(point);
+		// 고객 포인트, 고객 아이디, 주문 코드, 
+		Customer customer = new Customer();
+		customer.setCustomerId(customerId);
+		customer.setPoint(point);
 		Orders orders = new Orders();
 		orders.setOrderCode(orderCode);
 
 	    // 모델호출
 		OrdersService ordersService = new OrdersService();
-		ordersService.deleteOrderService(orders, customerId);
+		ordersService.deleteOrderService(orders, customer);
 		
 		// view가 없으므로
 		response.sendRedirect(request.getContextPath()+"/order/orderList");

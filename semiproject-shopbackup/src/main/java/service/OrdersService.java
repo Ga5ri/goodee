@@ -32,7 +32,6 @@ public class OrdersService {
 			conn = DBUtil.getConnection();
 			orderDao = new OrderDao();
 			list = orderDao.selectOrderListByPage(conn, beginRow, endRow, customerId);
-			System.out.println(list + "list 확인");
 			conn.commit(); // DBUtil.class에서 conn.setAutoCommit(false);
 		} catch (Exception e) {
 			try {
@@ -246,7 +245,7 @@ public class OrdersService {
 		return orders;
 	}
 	
-	// 주문하기
+	// 주문하기 - 포인트 적립만
 	public int addOrderService(Orders orders, PointHistory pointHistory) {
 		orderDao = new OrderDao();
 		pointDao = new PointDao();
@@ -281,15 +280,71 @@ public class OrdersService {
 		return row;
 	}
 	
-	// 주문취소(배송 전까지만 가능)
-	public int deleteOrderService(Orders orders, String customerId) {
+	// 주문하기 - 포인트 사용
+	public int addOrderService(Orders orders, PointHistory pointHistory, Customer customer) {
 		orderDao = new OrderDao();
+		pointDao = new PointDao();
+		int orderCode = 0;
+		int point = 0;
 		Connection conn = null;
 		int row = 0;
+		int row2 = 0;
 		try {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
-			row = orderDao.deleteOrderList(conn, orders, customerId);
+			row = orderDao.addOrder(conn, orders);
+			System.out.println(row + " : 1차 주문");
+			orderCode = orderDao.selectOrderForPoint(conn, customer.getCustomerId());
+			System.out.println(orderCode + " : 2차 주문생성 후 주문번호 가져오기");
+			pointHistory.setOrderCode(orderCode);
+			row2 = pointDao.addPointHistory(conn, pointHistory);
+			System.out.println(row2 + " : 3차 포인트 기록");
+			point = pointDao.updatePoint(conn, customer);
+			System.out.println(point + " : 4차 포인트 업데이트");
+			conn.commit();
+		} catch (Exception e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return point;
+	}
+	
+	// 주문취소(배송 전까지만 가능) - 포인트 사용 후, 적립만 했었다면 2차부터
+	public int deleteOrderService(Orders orders, Customer customer) {
+		orderDao = new OrderDao();
+		pointDao = new PointDao();
+		PointHistory pointHistory = new PointHistory();
+		int orderCode = orders.getOrderCode();
+		Connection conn = null;
+		int row = 0;
+		int row2 = 0;
+		try {
+			conn = DBUtil.getConnection();
+			conn.setAutoCommit(false);
+			pointHistory = pointDao.selectPointHistoryForDelete(conn, orderCode);
+			System.out.println(pointHistory.getPointKind() + "사용인가?");
+			String pointKind = pointHistory.getPointKind();
+			if(pointKind.equals("사용")) {
+				System.out.println("1차 포인트 업데이트"); // selectPoint
+				int returnPoint = customer.getPoint() + pointHistory.getPoint();
+				System.out.println(returnPoint + "  " + customer.getPoint() + " " + pointHistory.getPoint());
+				customer.setPoint(returnPoint);
+				pointDao.updatePoint(conn, customer);
+			}
+			row = pointDao.deletePointHistory(conn, orderCode);
+			System.out.println(row + " : 2차 포인트 기록삭제");
+			row2 = orderDao.deleteOrderList(conn, orderCode, customer.getCustomerId());
+			System.out.println(row2 + " : 3차 주문삭제");
 			conn.commit();
 		} catch (Exception e) {
 			try {

@@ -9,9 +9,12 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<!-- 간이 메뉴바 -->
 	<div>
 		<jsp:include page = "/WEB-INF/view/inc/menu.jsp"></jsp:include>
 	</div>
+	
+	<!-- 상품 상세정보 -->
 	<h1>상품 상세정보</h1>
 	<input type="hidden" name="goodsCode" value="${m.goodsCode}">
 	<c:forEach var="m" items="${list}" varStatus="s">
@@ -34,10 +37,12 @@
 				</tr>
 			</c:if>
 		</table>
+		
+		<!-- 관리자,고객이 보이는 버튼 분리 -->
 		<c:choose>
 			<c:when test="${loginEmp != null}">
 				<button type="button" onclick="location.href='${pageContext.request.contextPath}/goods/modifyGoods?goodsCode=${m.goodsCode}'">수정</button>
-				<button type="button" onclick="location.href='${pageContext.request.contextPath}/goods/deleteGoods?goodsCode=${m.goodsCode}'">삭제</button>
+				<button type="button" onclick="location.href='${pageContext.request.contextPath}/emp/checkPw?targetUrl=/goods/deleteGoods?goodsCode=${m.goodsCode}'">삭제</button>
 			</c:when>
 			<c:otherwise>
 				<c:if test="${soldout eq 'N'}">

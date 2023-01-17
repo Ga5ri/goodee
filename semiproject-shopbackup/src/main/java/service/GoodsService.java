@@ -6,9 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import dao.EmpDao;
 import dao.GoodsDao;
 import dao.GoodsImgDao;
 import util.DBUtil;
+import vo.Emp;
 import vo.Goods;
 import vo.GoodsImg;
 
@@ -16,6 +18,64 @@ import vo.GoodsImg;
 public class GoodsService {
 	private GoodsDao goodsDao;
 	private GoodsImgDao goodsImgDao;
+	// hit
+	public int updateHit(Goods goods) {
+		int row = 0;
+		Connection conn = null;
+		
+		try {
+			conn = DBUtil.getConnection();
+			conn.setAutoCommit(false);
+			GoodsDao goodsDao = new GoodsDao();
+			row = goodsDao.updateHit(conn, goods);
+			conn.commit();
+		} catch (Exception e) {		
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return row;
+	}
+	
+	// hit 상품 리스트
+	// 상품 리스트
+	public ArrayList<HashMap<String, Object>> getItemListByTop() {
+		ArrayList<HashMap<String, Object>> topList = null;
+		Connection conn = null;
+		try {
+			conn = DBUtil.getConnection();
+			System.out.println("db 접속(goodsList)");
+			conn.setAutoCommit(false);
+			goodsDao = new GoodsDao();
+			topList = goodsDao.selectItemListByTop(conn);
+			conn.commit();
+		} catch(Exception e) {
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return topList;
+	}
+
 	// 검색한 상품 리스트
 	public ArrayList<HashMap<String, Object>> getItemListBySearch(int beginRow, int rowPerPage, String searchWord) {
 		ArrayList<HashMap<String, Object>> list = null;
@@ -45,7 +105,7 @@ public class GoodsService {
 	}
 	
 	// 상품 리스트
-	public ArrayList<HashMap<String, Object>> getItemList(int beginRow, int rowPerPage) {
+	public ArrayList<HashMap<String, Object>> getItemList(int beginRow, int rowPerPage, String category) {
 		ArrayList<HashMap<String, Object>> list = null;
 		Connection conn = null;
 		try {
@@ -53,7 +113,8 @@ public class GoodsService {
 			System.out.println("db 접속(goodsList)");
 			conn.setAutoCommit(false);
 			goodsDao = new GoodsDao();
-			list = goodsDao.selectItemList(conn, beginRow, rowPerPage);
+			list = goodsDao.selectItemList(conn, beginRow, rowPerPage, category);
+			System.out.println(category);
 			conn.commit();
 		} catch(Exception e) {
 			try {

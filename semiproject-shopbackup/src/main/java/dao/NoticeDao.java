@@ -60,8 +60,9 @@ public class NoticeDao {
 	// 공지 리스트(페이징)
 	public ArrayList<Notice> selectNoticeListByPage(Connection conn, int beginRow, int rowPerPage) throws Exception {
 		ArrayList<Notice> list = new ArrayList<Notice>();
-		String sql = "SELECT notice_code noticeCode, notice_title noticeTitle, notice_content noticeContent, emp_id empId, createdate "
-				+ 	" FROM notice ORDER BY createdate DESC LIMIT ?,?";
+		String sql = "SELECT notice_code noticeCode, notice_title noticeTitle"
+				+ 	" , notice_content noticeContent, emp_id empId, DATE_FORMAT(createdate, '%Y-%m-%d')"
+				+ 	" FROM notice ORDER BY notice_code DESC LIMIT ?,?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, beginRow);
 		stmt.setInt(2, rowPerPage);
@@ -72,7 +73,7 @@ public class NoticeDao {
 			n.setNoticeTitle(rs.getString("noticeTitle"));
 			n.setNoticeContent(rs.getString("noticeContent"));
 			n.setEmpId(rs.getString("empId"));
-			n.setCreatedate(rs.getString("createdate"));
+			n.setCreatedate(rs.getString("DATE_FORMAT(createdate, '%Y-%m-%d')"));
 			list.add(n);
 		}
 		return list;

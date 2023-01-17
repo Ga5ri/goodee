@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,9 +37,9 @@ public class AddQuestionCommentController extends HttpServlet {
 		
 		// 모델호출
 		this.questionCommentService = new QuestionCommentService();
-		Question returnQuestion = questionCommentService.selectOrdersCode(questionCode);
+		HashMap<String, Object> q = questionCommentService.selectOrderCode(questionCode);
 		request.setCharacterEncoding("UTF-8");
-		request.setAttribute("q", returnQuestion);
+		request.setAttribute("q", q);
 		
 		// 글작성 폼 View
 		request.getRequestDispatcher("/WEB-INF/view/questionComment/addQuestionComment.jsp").forward(request, response);

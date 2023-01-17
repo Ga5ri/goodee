@@ -68,7 +68,7 @@ private QuestionCommentService questionCommentService;
 		   if(request.getParameter("sort") != null) {
 			   sort =request.getParameter("sort");
 		   } 
-		   
+  
 		// 모델 호출
 		this.questionCommentService = new QuestionCommentService();
 		request.setCharacterEncoding("UTF-8"); // request 한글코딩	

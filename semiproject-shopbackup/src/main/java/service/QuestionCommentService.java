@@ -44,28 +44,6 @@ public class QuestionCommentService {
 		return resultRow;
 	}
 	
-	// modifyQuestionComment (답변글 수정 폼 정보 불러오기)  
-	// 사용하는 곳 : modifyQuestionCommentController
-	public HashMap<String, Object> getCommentCodeByComment(int commentCode) {
-		this.questionCommentDao = new QuestionCommentDao();
-		HashMap<String, Object> q = null;
-		Connection conn  = null;
-		try {
-			conn = DBUtil.getConnection();
-			questionCommentDao = new QuestionCommentDao();
-			q = questionCommentDao.selectCommentCodeByComment(conn, commentCode);
-		} catch(Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				conn.close();
-			} catch(SQLException e1){
-				e1.printStackTrace();
-			}
-		}
-		return q;
-		}
-		
 	// removeQuestionComment (답변글 삭제) 
 	// 사용하는 곳 : removeQuestionCommentController
 	public int removeQuestionComment(int commentCode, Emp loginEmp) {
@@ -114,8 +92,8 @@ public class QuestionCommentService {
 		return empId;
 	}
 		
-	// questionCommentOne 출력
-	// 사용하는 곳 : questionCommentOneController
+	// questionCommentOne 출력,  modifyQuestionComment (답변글 수정 폼 정보 불러오기)  
+	// 사용하는 곳 : questionCommentOneController, modifyQuestionCommentController
 	public HashMap<String, Object> getQuestionOne(int questionCode) {
 		this.questionCommentDao = new QuestionCommentDao();
 		HashMap<String, Object> q = null;
@@ -160,14 +138,14 @@ public class QuestionCommentService {
 	
 	// addQuestionComment (question 정보조회)
 	// 사용하는 곳 : addQuestionCommentController	
-	public Question selectOrdersCode(int questionCode) {
+	public HashMap<String, Object> selectOrderCode(int questionCode) {
 		this.questionCommentDao = new QuestionCommentDao();
-		Question returnQuestion = null;
+		HashMap<String, Object> q = null;
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
 			questionCommentDao = new QuestionCommentDao();
-			returnQuestion = questionCommentDao.selectOrdersCode(conn, questionCode);
+			q = questionCommentDao.selectOrderCode(conn, questionCode);
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -177,7 +155,7 @@ public class QuestionCommentService {
 				e1.printStackTrace();
 			}
 		}
-		return returnQuestion;
+		return q;
 	}
 	
 	// questionList 출력

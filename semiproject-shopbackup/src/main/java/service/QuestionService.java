@@ -1,5 +1,6 @@
 package service;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -58,17 +59,33 @@ public class QuestionService {
 		}
 	// modifyQuestion (문의글 수정)
 	// 사용하는 곳 : modifyQuestionController	
-	public int modifyQuestion(Question modifyQuestion) {
+	public int modifyQuestion(Question modifyQuestion, String dir) {
+		HashMap<String, Object> q = null;
 		int resultRow=0;
 		this.questionDao = new QuestionDao();
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
+			conn.setAutoCommit(false);
+			// 수정되는 파일이 있을사 기존 파일 삭제 후 업데이트
+			int questioncode = modifyQuestion.getQuestionCode();
+			q = questionDao.selectQuestionOne(conn, questioncode);
+			File f = new File(dir+"\\"+(String)q.get("questionImg"));
+			if(f.exists()) {
+				f.delete();
+			}
+			questionDao.modifyQuestion(conn, modifyQuestion);
 			resultRow = questionDao.modifyQuestion(conn, modifyQuestion);
+			
 			conn.commit();
 		} catch (Exception e) {
 			try {
 				conn.rollback();
+				// db작업에 실패시 이미 업로드되어 버린 파일 불러와 삭제
+				File f = new File(dir+"\\"+modifyQuestion.getQuestionImg());
+				if(f.exists()) {
+					f.delete();
+				}
 			} catch(SQLException e1) {
 				e.printStackTrace();
 			}
@@ -130,8 +147,8 @@ public class QuestionService {
 		return customerId;
 	}
 	
-	// questionOne 출력
-	// 사용하는 곳 : questionOneController
+	// questionOne 출력, modifyQuestion 문의정보값 
+	// 사용하는 곳 : questionOneController, modifyQuestionController
 	public HashMap<String, Object> getQuestionOne(int questionCode) {
 		this.questionDao = new QuestionDao();
 		HashMap<String, Object> q = null;
@@ -154,20 +171,31 @@ public class QuestionService {
 	
 	// addQuestion (문의글 추가)
 	// 사용하는 곳 : addQuestionController	
-	public int addQuestion(Question addQuestion) {
+	public int addQuestion(Question addQuestion, String dir) {
 		int resultRow = 0;
 		this.questionDao = new QuestionDao();
 		Connection conn = null;
 		try {
 			conn = DBUtil.getConnection();
+			conn.setAutoCommit(false);
 			resultRow = questionDao.addQuestion(conn, addQuestion);
+			conn.commit();
 		} catch (Exception e) {
-			e.printStackTrace();
+			try {
+				conn.rollback();
+				// db작업에 실패시 이미 업로드되어 버린 파일 불러와 삭제
+				File f = new File(dir+"\\"+addQuestion.getQuestionImg());
+				if(f.exists()) {
+					f.delete();
+				}
+			} catch(SQLException e1) {
+				e1.printStackTrace();
+			}
 		} finally {
 			try {
 				conn.close();
-			} catch(SQLException e1) {
-				e1.printStackTrace();
+			} catch(SQLException e) {
+				e.printStackTrace();
 			}
 		}
 		return resultRow;

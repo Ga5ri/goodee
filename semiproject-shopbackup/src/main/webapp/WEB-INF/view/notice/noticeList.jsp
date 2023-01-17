@@ -7,9 +7,12 @@
 <title>Insert title here</title>
 </head>
 <body>
+	<!-- 간이 메뉴바 -->
 	<div>
 		<jsp:include page = "/WEB-INF/view/inc/menu.jsp"></jsp:include>
 	</div>
+	
+	<!-- 공지사항 목록 -->
 	<h1>공지 사항</h1>
 	<!-- 관리자 이상만 공지 작성 가능 -->
 	<c:if test="${loginEmp != null}">
@@ -31,6 +34,7 @@
 			</tr>
 		</c:forEach>
 	</table>
+	
 	<!-- 페이징 -->
 	<div>
 		<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=1">처음</a>		

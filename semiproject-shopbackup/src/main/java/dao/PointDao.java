@@ -25,13 +25,14 @@ public class PointDao {
 		return point;
 	}
 
-	// 구매확정 시 포인트 처리
+	// 포인트 사용 || 구매확정 시 포인트 처리
 	public int updatePoint(Connection conn, Customer customer) throws Exception {
 		int row = 0;
-		String sql = "UPDATE customer SET point = ? WHERE customerId = ?";
+		String sql = "UPDATE customer SET point = ? WHERE customer_id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, customer.getPoint());
 		stmt.setString(2, customer.getCustomerId());
+		System.out.println(customer.getPoint() + " : 사용 후 포인트");
 
 		row = stmt.executeUpdate();
 		return row;
@@ -50,6 +51,38 @@ public class PointDao {
 		stmt.setInt(3, pointHistory.getPoint());
 		System.out.println(pointHistory.getPoint() + " : point");
 
+		row = stmt.executeUpdate();
+		return row;
+	}	
+	
+	// 삭제를 위한 포인트 히스토리 조회
+	public PointHistory selectPointHistoryForDelete(Connection conn, int orderCode) throws Exception {
+		PointHistory pointHistory = new PointHistory();
+		
+		String sql = "SELECT point_kind pointKind, point FROM point_history WHERE order_code = ?";
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, orderCode);
+		System.out.println(orderCode + " : orderCode");
+
+		ResultSet rs = stmt.executeQuery();
+		if(rs.next()) {
+			pointHistory = new PointHistory();
+			pointHistory.setPointKind(rs.getString("pointKind"));
+			pointHistory.setPoint(rs.getInt("point"));
+		}
+		System.out.println(rs.getString("pointKind") + rs.getInt("point"));
+		return pointHistory;
+	}
+	
+	// 주문취소 시 포인트 기록 삭제
+	public int deletePointHistory(Connection conn, int orderCode) throws Exception {
+		int row = 0;
+
+		String sql = "DELETE FROM point_history WHERE order_code = ?";
+		
+		PreparedStatement stmt = conn.prepareStatement(sql);
+		stmt.setInt(1, orderCode);
+			
 		row = stmt.executeUpdate();
 		return row;
 	}

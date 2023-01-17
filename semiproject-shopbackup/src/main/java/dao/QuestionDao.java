@@ -84,12 +84,13 @@ public class QuestionDao {
 	public int modifyQuestion(Connection conn, Question question) throws Exception {
 		int resultRow = 0;
 		String sql = " UPDATE question "
-				+ " 	SET category = ?, question_memo = ?, createdate = now()"
+				+ " 	SET category = ?, question_memo = ?, question_img =?, createdate = now()"
 				+ " where question_code = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, question.getCategory());
 		stmt.setString(2, question.getQuestionMemo());
-		stmt.setInt(3, question.getQuestionCode());
+		stmt.setString(3, question.getQuestionImg());
+		stmt.setInt(4, question.getQuestionCode());
 		resultRow = stmt.executeUpdate();
 		stmt.close();
 		return resultRow;
@@ -129,18 +130,18 @@ public class QuestionDao {
 		return customerId;
 	}
 	 
-	// questionOne 출력
-	// 사용하는 곳 : questionOneController, question
+	// questionOne 출력, modifyQuestion 문의정보값 
+	// 사용하는 곳 : questionOneController, modifyQuestionController
 	public HashMap<String, Object> selectQuestionOne(Connection conn, int questionCode) throws Exception {
 		HashMap<String, Object> q = null;
-		String sql = "SELECT r.question_code questionCode, r.category category, r.question_memo questionMemo"
+		String sql = "SELECT r.question_code questionCode, r.category category, r.question_memo questionMemo, r.question_img questionImg"
 				+ "				, r.createdate createdate, r.comment_memo commentMemo, r.commentCreatedate commentCreatedate"
 				+ "				, r.order_code orderCode, g.goods_code goodsCode, g.goods_Name goodsName"
 				+ "		FROM "
-				+ "				(SELECT r.question_code, r.category, r.question_memo, r.createdate, r.comment_memo"
+				+ "				(SELECT r.question_code, r.category, r.question_memo, r.createdate, r.comment_memo, r.question_img"
 				+ "						, r.commentCreatedate commentCreatedate, o.order_code, o.goods_code"
 				+ "				FROM "
-				+ "						(SELECT q.question_code, q.orders_code, q.category, q.question_memo"
+				+ "						(SELECT q.question_code, q.orders_code, q.category, q.question_memo, q.question_img"
 				+ "								, q.createdate, qc.comment_memo, qc.createdate commentCreatedate"
 				+ "						FROM question q "
 				+ "							LEFT OUTER JOIN question_comment qc "
@@ -159,6 +160,7 @@ public class QuestionDao {
 			q.put("orderCode", rs.getInt("orderCode"));
 			q.put("category", rs.getString("category"));
 			q.put("questionMemo", rs.getString("questionMemo"));
+			q.put("questionImg", rs.getString("questionImg"));
 			q.put("createdate", rs.getString("createdate"));
 			q.put("commentMemo", rs.getString("commentMemo"));
 			q.put("commentCreatedate", rs.getString("commentCreatedate"));
@@ -172,17 +174,18 @@ public class QuestionDao {
 	// 사용하는 곳 : addQuestionController	
 	public int addQuestion(Connection conn, Question addQuestion) throws Exception {
 		int resultRow=0;
-		String sql = "INSERT INTO question (orders_code, category, question_memo, createdate)"
-				+ " VALUES(?,?,?,now())";
+		String sql = "INSERT INTO question (orders_code, category, question_memo, question_img, createdate)"
+				+ " VALUES(?, ?, ?, ?, now())";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, addQuestion.getOrderCode());
 		stmt.setString(2, addQuestion.getCategory());
 		stmt.setString(3, addQuestion.getQuestionMemo());
+		stmt.setString(4, addQuestion.getQuestionImg());
 		resultRow = stmt.executeUpdate();
 		return resultRow;
 	}
 
-	// addQuestion (ordersCode, goodsName 조회)
+	// addQuestion (orderCode, goodsName 조회)
 	// 사용하는 곳 : addQuestionController	
 	public ArrayList<HashMap<String, Object>> selectOrdersCode(Connection conn, Customer loginCustomer) throws Exception{
 		ArrayList<HashMap<String, Object>> list = new ArrayList<HashMap<String,Object>>();

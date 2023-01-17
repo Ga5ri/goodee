@@ -43,10 +43,11 @@ public class QuestionOneController extends HttpServlet {
 		int orderCode = (int) q.get("orderCode");
 		String customerId = questionService.getQuestionOneCustomerIdByOrderCode(orderCode);
 		request.setAttribute("q", q);
+		
+		// 고객일경우 고객ID값 , 사원일경우 사원ID값 보냄(view에서 수정,삭제시 필요)
 		if(loginCustomer != null) {
 			request.setAttribute("customerId", customerId);
 			request.setAttribute("loginCustomer", loginCustomer.getCustomerId());
-			return;
 		} else {
 			request.setAttribute("loginEmp", loginEmp);
 		}

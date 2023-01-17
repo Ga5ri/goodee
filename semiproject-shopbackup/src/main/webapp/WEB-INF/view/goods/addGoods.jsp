@@ -30,7 +30,7 @@
 				<td>상품 재고(Y선택시 품절)</td>
 				<td>
 					<input type="radio" name="soldout" value="Y">Y
-					<input type="radio" name="soldout" value="N">N
+					<input type="radio" name="soldout" value="N" checked="checked">N
 				</td>
 			</tr>
 			<!-- 미정
