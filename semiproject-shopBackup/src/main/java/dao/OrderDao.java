@@ -20,15 +20,17 @@ public class OrderDao {
 		ArrayList<Orders> list = new ArrayList<Orders>();
 		String sql = "SELECT o.order_code orderCode"
 				+ "			, g.goods_code goodsCode, g.goods_name goodsName, g.goods_price goodsPrice, g.soldout soldout"
-				+ "			, c.customer_id customerID, c.customer_name customerName, c.customer_phone customerPhone, c.point point"
+				+ "			, c.customer_id customerID, c.customer_name customerName, c.customer_phone customerPhone, c.point customerPoint"
 				+ "			, ca.address_code addressCode, ca.address address"
 				+ "			, o.order_quantity orderQuantity, o.order_price orderPrice, o.order_state orderState, o.createdate createdate"
+				+ "			, p.point_kind pointKind, p.point point"
 				+ " 	FROM (SELECT ROW_NUMBER() OVER(ORDER BY order_code desc) rnum, order_code, goods_code, customer_id, address_code"
 				+ "					, order_quantity, order_price, order_state, createdate"
 				+ " 			FROM orders) o"
 				+ " 	INNER JOIN goods g ON o.goods_code = g.goods_code"
 				+ " 	INNER JOIN customer c ON o.customer_id = c.customer_id"
 				+ " 	INNER JOIN customer_address ca ON o.address_code = ca.address_code"
+			 	+ "		INNER JOIN point_history p ON o.order_code = p.order_code"
 				+ " 	WHERE rnum BETWEEN ? AND ? AND o.customer_id = ? ORDER BY o.order_code desc"; // WHERE rnum >=? AND rnum <=?;
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setInt(1, beginRow);
@@ -46,6 +48,8 @@ public class OrderDao {
 			o.setCustomerId(rs.getString("customerID"));
 			o.setCustomerName(rs.getString("customerName"));
 			o.setCustomerPhone(rs.getString("customerPhone"));
+			o.setCustomerPoint(rs.getInt("customerPoint"));
+			o.setPointKind(rs.getString("pointKind"));
 			o.setPoint(rs.getInt("point"));
 			o.setAddressCode(rs.getInt("addressCode"));
 			o.setAddress(rs.getString("address"));

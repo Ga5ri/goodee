@@ -22,7 +22,6 @@ public class GoodsService {
 	public int updateHit(Goods goods) {
 		int row = 0;
 		Connection conn = null;
-		
 		try {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);

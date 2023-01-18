@@ -85,6 +85,7 @@ public class AddOrderController extends HttpServlet {
 		String createdate = request.getParameter("createdate");
 		
 		String pointKind = null;
+		int earnPoint = 0;
 		int point = Integer.parseInt(request.getParameter("point"));
 		int usePoint = Integer.parseInt(request.getParameter("usePoint"));
 		
@@ -106,23 +107,28 @@ public class AddOrderController extends HttpServlet {
 
 		// 모델호출
 		ordersService = new OrdersService();
+		pointKind = "적립예정";
+		earnPoint = Math.round(orderPrice / 100);
 		if(usePoint == 0) { // 적립만 point_history '적립 예정으로'
-			pointKind = "적립예정";
-			int earnPoint = Math.round(orderPrice / 100);
-			System.out.println(earnPoint);
 			pointHistory.setPointKind(pointKind);
 			pointHistory.setPoint(earnPoint);
-			
+			System.out.println(earnPoint + " : 포인트 적립");
 			ordersService.addOrderService(orders, pointHistory);
 			
 		} else { // 포인트 사용 및 기록 : point update, pointHistory
+			System.out.println("포인트사용");
+			
+			pointHistory.setPointKind(pointKind);
+			pointHistory.setPoint(earnPoint);
+			System.out.println(earnPoint + " : 포인트 적립");
+			ordersService.addOrderService(orders, pointHistory);
+			
 			pointKind = "사용";
+			point = point - usePoint;
 			pointHistory.setPointKind(pointKind);
 			pointHistory.setPoint(usePoint);
-			point = point - usePoint;
 			customer.setPoint(point);
 			System.out.println("포인트 사용");
-			
 			ordersService.addOrderService(orders, pointHistory, customer);
 		}
 		

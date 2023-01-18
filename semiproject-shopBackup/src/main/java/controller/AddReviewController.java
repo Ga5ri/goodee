@@ -12,7 +12,7 @@ import service.ReviewService;
 import vo.Customer;
 import vo.Review;
 
-@WebServlet("/review/addReviewForm")
+@WebServlet("/review/addReview")
 public class AddReviewController extends HttpServlet {
 	private ReviewService reviewService; 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

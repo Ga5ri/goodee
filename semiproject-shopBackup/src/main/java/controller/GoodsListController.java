@@ -50,11 +50,11 @@ public class GoodsListController extends HttpServlet {
 		if(searchWord != null) { // 검색값이 있다면
 			list = goodsService.getItemListBySearch(beginRow, rowPerPage, searchWord);
 			totalCnt = goodsService.count(searchWord);
-		} else { // 검색값이 없다면
+		} // 검색값이 없다면
 			list = goodsService.getItemList(beginRow, rowPerPage, category);
 			System.out.println("list :"+list);
 			totalCnt = goodsService.count();
-		}
+		
 		// 마지막 페이지
 		int lastPage = totalCnt / rowPerPage;
 		if(totalCnt % rowPerPage != 0) {

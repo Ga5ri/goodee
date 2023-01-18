@@ -292,15 +292,13 @@ public class OrdersService {
 		try {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
-			row = orderDao.addOrder(conn, orders);
-			System.out.println(row + " : 1차 주문");
 			orderCode = orderDao.selectOrderForPoint(conn, customer.getCustomerId());
-			System.out.println(orderCode + " : 2차 주문생성 후 주문번호 가져오기");
+			System.out.println(orderCode + " : 1차 주문생성 후 주문번호 가져오기");
 			pointHistory.setOrderCode(orderCode);
 			row2 = pointDao.addPointHistory(conn, pointHistory);
-			System.out.println(row2 + " : 3차 포인트 기록");
+			System.out.println(row2 + " : 2차 포인트 사용 기록");
 			point = pointDao.updatePoint(conn, customer);
-			System.out.println(point + " : 4차 포인트 업데이트");
+			System.out.println(point + " : 3차 사용 포인트 업데이트");
 			conn.commit();
 		} catch (Exception e) {
 			try {

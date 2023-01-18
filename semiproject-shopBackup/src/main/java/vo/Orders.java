@@ -16,15 +16,15 @@ public class Orders {
 	private String orderState;
 	private String createdate;
 	private String pointKind;
+	private int customerPoint;
 	private int point;
-	
 	public Orders() {
 		super();
 	}
 	
 	public Orders(int orderCode, int goodsCode, String goodsName, int goodsPrice, String soldout, String customerId,
 			String customerName, String customerPhone, int addressCode, String address, int orderQuantity,
-			int orderPrice, String orderState, String createdate, String pointKind, int point) {
+			int orderPrice, String orderState, String createdate, String pointKind, int customerPoint, int point) {
 		super();
 		this.orderCode = orderCode;
 		this.goodsCode = goodsCode;
@@ -41,6 +41,7 @@ public class Orders {
 		this.orderState = orderState;
 		this.createdate = createdate;
 		this.pointKind = pointKind;
+		this.customerPoint = customerPoint;
 		this.point = point;
 	}
 	
@@ -50,10 +51,10 @@ public class Orders {
 				+ ", goodsPrice=" + goodsPrice + ", soldout=" + soldout + ", customerId=" + customerId
 				+ ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", addressCode=" + addressCode
 				+ ", address=" + address + ", orderQuantity=" + orderQuantity + ", orderPrice=" + orderPrice
-				+ ", orderState=" + orderState + ", createdate=" + createdate + ", pointKind=" + pointKind + ", point="
-				+ point + "]";
+				+ ", orderState=" + orderState + ", createdate=" + createdate + ", pointKind=" + pointKind
+				+ ", customerPoint=" + customerPoint + ", point=" + point + "]";
 	}
-	
+
 	public int getOrderCode() {
 		return orderCode;
 	}
@@ -144,11 +145,17 @@ public class Orders {
 	public void setPointKind(String pointKind) {
 		this.pointKind = pointKind;
 	}
+	public int getCustomerPoint() {
+		return customerPoint;
+	}
+	public void setCustomerPoint(int customerPoint) {
+		this.customerPoint = customerPoint;
+	}
 	public int getPoint() {
 		return point;
 	}
 	public void setPoint(int point) {
 		this.point = point;
-	}
+	}	
 }
 

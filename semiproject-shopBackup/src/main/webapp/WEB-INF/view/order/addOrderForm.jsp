@@ -8,23 +8,33 @@
 <!-- jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script>
-	$(document).ready(function(){
-		/* 결제가격 계산 */
-		$( '#goodsPrice, #orderQuantity' ).on("input", function() {
-		    let goodsPrice = $('#goodsPrice').val();
-		    let orderQuantity = $('#orderQuantity').val();
-		    let resultPrice = goodsPrice * parseInt(orderQuantity);
-		    $('#orderPrice').val(resultPrice);
-	    });
-		
+	$(document).ready(function(){		
 		/* 입력 값 제한 */
 		$( '#usePoint' ).on("input", function() {
-		    let point = $('#point').val();
-		    let usePoint = $('#usePoint').val();
-		    if (usePoint > point || usePoint < 0) {
+		    let point = Number($('#point').val());
+		    let usePoint = Number($('#usePoint').val());
+		    let orderPrice = Number($('#orderPrice').val());
+		    if (usePoint > point) {
+		    	$('#usePoint').val(point) ;
+		    	return;
+		    }
+		    if ( usePoint < 0 || usePoint == null || usePoint == '') {
 		    	alert("포인트를 확인해주세요");
 		    	$('#usePoint').val(0) ;
 		    	return;
+		    }
+	    }); /* 	var b = a.replace(/(^0+)/, ""); */
+
+		/* 결제가격 계산 */
+		$( '#goodsPrice, #orderQuantity, #usePoint' ).on("input", function() {
+		    let goodsPrice = Number($('#goodsPrice').val());
+		    let orderQuantity = Number($('#orderQuantity').val());
+		    let usePoint = Number($('#usePoint').val());
+		    let resultPrice = goodsPrice * orderQuantity - usePoint;		    
+		    $('#orderPrice').val(resultPrice);
+		    if(orderQuantity < 0 || $('#orderPrice').val() < 0){
+		    	alert("입력값를 확인해주세요");		
+		    	orderQuantity.val(0);
 		    }
 	    });
 		
@@ -83,16 +93,16 @@
 		    <tr>
 				<th>사용 포인트</th>
 				<td>
-				    <input type="number" id="usePoint" name="usePoint" min="0">
+				    <input type="number" id="usePoint" name="usePoint" min="0" max="${orderPrice}" value="0">
 				    <label for="usePoint">사용 포인트</label>
 			    </td>		    
 		    </tr>
 			<tr>
 				<th>주문수량</th><!-- 추후 최대 수량 재고로 제한 -->
-				<td><input type="number" id="orderQuantity" name="orderQuantity" min="1"></td>
+				<td><input type="number" id="orderQuantity" name="orderQuantity" min="1" value="0"></td>
 			</tr>
 			<tr>
-				<th>결제가격</th>
+				<th>결제가격</t0h>
 				<td><input type="number" id="orderPrice" name="orderPrice" readonly></td> <!-- goods에서 받아옴 -->
 			</tr>
 			<tr>

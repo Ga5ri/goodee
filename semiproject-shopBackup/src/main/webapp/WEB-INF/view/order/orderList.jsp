@@ -64,11 +64,13 @@
 				<th>주문수량</th>
 				<th>상품가격</th>
 				<th>주문상태</th>
-				<th>주문일</th>
-				
-				<th>포인트</th>
-				<th>주문취소</th>
+				<th>구매확정</th>
 				<th>리뷰</th>
+				
+				
+				<th>주문일</th>				
+				<th>사용 포인트</th>
+				<th>주문취소</th>
 			</tr>
 			<c:forEach var="o" items="${orderList}">
 				<tr>
@@ -84,11 +86,13 @@
 					<td>${o.orderQuantity}</td>
 					<td>${o.orderPrice}</td>
 					<td>${o.orderState}</td>
+					<td><a type="button" href="${pageContext.request.contextPath}/order/orderConfirm?goodsCode">구매확정</a></td>
+					<td><a type="button" href="${pageContext.request.contextPath}/review/addReview?goodsCode=${o.goodsCode}">리뷰작성</a></td>
+					
 					<td>${o.createdate}</td>
-										
 					<td>${o.point}</td>
 					<td><a type="button" href="${pageContext.request.contextPath}/order/deleteOrder?orderCode=${o.orderCode}&point=${o.point}">취소</a></td>
-					<td><a type="button" href="${pageContext.request.contextPath}/review/addReviewForm?orderCode=${o.goodsCode}">리뷰작성</a></td>
+					
 				</tr>
 			</c:forEach>
 		</table>

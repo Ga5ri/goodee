@@ -32,7 +32,14 @@
 		<table class="table" border="1">
 			<tr>
 				<th>상품사진</th>
-				<td><img src="${pageContext.request.contextPath}/upload/${m.filename}" width="200" height="200"></td>
+				<td>
+					<c:if test="${filename ne null}">
+						<img src="${pageContext.request.contextPath}/upload/${filename}" width="200" height="200">
+					</c:if>
+					<c:if test="${filename eq null}">
+						<span>사진 준비중</span>
+					</c:if>
+				</td>
 			</tr>
 			<tr>
 				<th>상품이름</th>

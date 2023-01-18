@@ -37,15 +37,24 @@
 	
 	<!-- 페이징 -->
 	<div>
-		<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=1">처음</a>		
+		<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=1&rowPerPage=${rowPerPage}">처음</a>		
 		<c:if test="${currentPage > 1}">
-			<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=${currentPage-1}">이전</a>
-		</c:if>	
-		<span>${currentPage}</span>	
+			<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=${currentPage-1}&rowPerPage=${rowPerPage}">이전</a>
+		</c:if>
+		<c:forEach var="index" begin="${startPage}" end="${endPage}" step="1">
+			<c:choose>
+				<c:when test="${currentPage == i}">
+					<a href="">${index}</a>
+				</c:when>
+				<c:otherwise>
+					<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=${index}&rowPerPage=${rowPerPage}">${index}</a>	
+				</c:otherwise>
+			</c:choose>
+		</c:forEach>	
 		<c:if test="${currentPage < lastPage}">
-			<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=${currentPage+1}">다음</a>
+			<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=${currentPage+1}&rowPerPage=${rowPerPage}">다음</a>
 		</c:if>	
-		<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=${lastPage}">마지막</a>
+		<a href="${pageContext.request.contextPath}/notice/noticeList?currentPage=${lastPage}&rowPerPage=${rowPerPage}">마지막</a>
 	</div>
 </body>
 </html>
