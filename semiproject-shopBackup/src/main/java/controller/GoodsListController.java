@@ -22,16 +22,25 @@ public class GoodsListController extends HttpServlet {
 		String category = "";
 		if(request.getParameter("category") != null) {
 			category =request.getParameter("category");
-			System.out.println(category+"<--category null아닌경우");
+			System.out.println(category+"<--category공백처리");
 		} 
 		
 		// 페이징
+		
+		// 현재 페이지
 		int currentPage = 1;
 		if(request.getParameter("currentPage") != null) {
 			currentPage = Integer.parseInt(request.getParameter("currentPage"));
 		}
-		int rowPerPage = 10;
-		int beginRow = (currentPage-1) * rowPerPage;	
+		
+		// 마지막 페이지
+		int endRow = 10 * currentPage;	// endRow
+		
+		// 페이지당 보일 수
+		int realRowPerPage = 10;
+		
+		// 시작 페이지
+		int beginRow = (10 * (currentPage - 1)) +1;	
 		
 		// 호출
 		GoodsService goodsService = new GoodsService();
@@ -47,25 +56,32 @@ public class GoodsListController extends HttpServlet {
 		int totalCnt = 0;
 		// 검색어 받기
 		String searchWord = request.getParameter("searchWord");
-		if(searchWord != null) { // 검색값이 있다면
-			list = goodsService.getItemListBySearch(beginRow, rowPerPage, searchWord);
-			totalCnt = goodsService.count(searchWord);
-		} // 검색값이 없다면
-			list = goodsService.getItemList(beginRow, rowPerPage, category);
-			System.out.println("list :"+list);
+		// 검색값 없을 때
+		if(searchWord == null || searchWord.equals("")) {
+			list = goodsService.getItemList(beginRow, endRow, searchWord, category);
 			totalCnt = goodsService.count();
+		// 검색값 있을 때
+		} else {
+			list = goodsService.getItemListBySearch(beginRow, endRow, searchWord, category);
+			totalCnt = goodsService.count(searchWord);
+		}
+		System.out.println("LIST :"+list);
+		System.out.println("행수카운트 :"+totalCnt);
 		
 		// 마지막 페이지
-		int lastPage = totalCnt / rowPerPage;
-		if(totalCnt % rowPerPage != 0) {
+		int lastPage = totalCnt / realRowPerPage ;
+		if(totalCnt % endRow != 0) {
 			lastPage++;
 		}
+		
+		System.out.println("endRow값 :"+endRow);
+		System.out.println("마지막페이지 :"+lastPage);
 		
 		request.setAttribute("list", list);
 		request.setAttribute("topList", topList);
 		request.setAttribute("beginRow", beginRow);
 		request.setAttribute("searchWord", searchWord);
-		request.setAttribute("rowPerPage", rowPerPage);
+		request.setAttribute("endRow", endRow);
 		request.setAttribute("currentPage", currentPage);
 		request.setAttribute("lastPage", lastPage);
 		request.setAttribute("category", category);

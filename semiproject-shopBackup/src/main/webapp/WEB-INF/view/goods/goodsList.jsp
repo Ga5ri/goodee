@@ -14,7 +14,11 @@
 			$('#pageForm').submit();
 			alert('change')
 		})
-	})
+		$('#searchBtn').click(function(){
+			$('#pageForm').submit();
+			alert('search')
+		})
+	});
 </script>
 </head>
 <body>
@@ -48,8 +52,8 @@
 	<h1>상품목록--------------------------------------------------------------------</h1>
 	<form method="get" action="${pageContext.request.contextPath}/goods/goodsList" id="pageForm">
 		<div>
-			<input type="search" name="searchWord" id="searchWord">
-			<button type="button">검색</button>
+			<input type="search" name="searchWord" id="searchWord" value="${searchWord}">
+			<button type="button" id="searchBtn">검색</button>
 		</div>
 
 	<!-- 정렬 기능구현 진행중 -->
@@ -62,28 +66,28 @@
 				<option value="nHit">판매인기순</option>
 			</c:if>
 			<c:if test="${category eq 'dPrice'}">
-				<option value="category">==선택==</option>
+				<option value="">==선택==</option>
 				<option value="dPrice" selected="selected">낮은가격순</option>
 				<option value="uPrice">높은가격순</option>
 				<option value="nCreatedate">최신등록순</option>
 				<option value="nHit">판매인기순</option>
 			</c:if>
 			<c:if test="${category eq 'uPrice'}">
-				<option value="category">==선택==</option>
+				<option value="">==선택==</option>
 				<option value="dPrice">낮은가격순</option>
 				<option value="uPrice" selected="selected">높은가격순</option>
 				<option value="nCreatedate">최신등록순</option>
 				<option value="nHit">판매인기순</option>
 			</c:if>
 			<c:if test="${category eq 'nCreatedate'}">
-				<option value="category">==선택==</option>
+				<option value="">==선택==</option>
 				<option value="dPrice">낮은가격순</option>
 				<option value="uPrice">높은가격순</option>
 				<option value="nCreatedate" selected="selected">최신등록순</option>
 				<option value="nHit">판매인기순</option>
 			</c:if>
 			<c:if test="${category eq 'nHit'}">
-				<option value="category">==선택==</option>
+				<option value="">==선택==</option>
 				<option value="dPrice">낮은가격순</option>
 				<option value="uPrice">높은가격순</option>
 				<option value="nCreatedate">최신등록순</option>
@@ -123,30 +127,30 @@
 	
 	<!-- 페이징 -->
 	<div>
-		<c:choose>
-			<c:when test="${searchWord == null}"> <!-- 검색값이 없다면 -->
-				<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=1&category=${category}">처음</a>		
-				<c:if test="${currentPage > 1}">
-					<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=${currentPage-1}&category=${category}">이전</a>
-				</c:if>	
-				<span>${currentPage}</span>	
-				<c:if test="${currentPage < lastPage}">
-					<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=${currentPage+1}&category=${category}">다음</a>
-				</c:if>	
-				<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=${lastPage}&category=${category}">마지막</a>
-			</c:when>
-			<c:otherwise> <!-- 검색값이 있다면 -->
-				<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=1">처음</a>		
-				<c:if test="${currentPage > 1}">
-					<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=${currentPage-1}">이전</a>
-				</c:if>	
-				<span>${currentPage}</span>	
-				<c:if test="${currentPage < lastPage}">
-					<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=${currentPage+1}">다음</a>
-				</c:if>	
-				<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=${lastPage}">마지막</a>
-			</c:otherwise>
-		</c:choose>
-	</div>
+	<c:choose>
+		<c:when test="${searchWord == null || searchWord.equals('')}"> <!-- 검색값이 없다면 -->
+			<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=1&category=${category}">처음</a>		
+			<c:if test="${currentPage > 1}">
+				<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=${currentPage-1}&category=${category}">이전</a>
+			</c:if>	
+			<span>${currentPage}</span>	
+			<c:if test="${currentPage < lastPage}">
+				<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=${currentPage+1}&category=${category}">다음</a>
+			</c:if>	
+			<a href="${pageContext.request.contextPath}/goods/goodsList?currentPage=${lastPage}&category=${category}">마지막</a>
+		</c:when>
+		<c:otherwise> <!-- 검색값이 있다면 -->
+			<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=1">처음</a>		
+			<c:if test="${currentPage > 1}">
+				<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=${currentPage-1}">이전</a>
+			</c:if>	
+			<span>${currentPage}</span>	
+			<c:if test="${currentPage < lastPage}">
+				<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=${currentPage+1}">다음</a>
+			</c:if>	
+			<a href="${pageContext.request.contextPath}/goods/goodsList?searchWord=${searchWord}&category=${category}&currentPage=${lastPage}">마지막</a>
+		</c:otherwise>
+	</c:choose>
+</div>
 </body>
 </html>

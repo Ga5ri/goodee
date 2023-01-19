@@ -46,7 +46,15 @@
 			</c:when>
 			<c:otherwise>
 				<c:if test="${soldout eq 'N'}">
-					<button type="button" onclick="">장바구니</button>
+					<!-- 장바구니(비회원, 회원) 분기 -->
+					<c:choose>
+						<c:when test="${loginCustomer == null }">
+							<button type="button" onclick="location.href='${pageContext.request.contextPath }/cart/nonMemberCartList?action=addCart&goodsCode=${m.goodsCode }'">비회원 장바구니</button>
+						</c:when>
+						<c:otherwise>
+							<button type="button" onclick="location.href='${pageContext.request.contextPath }/cart/customerCartList?action=addCart&goodsCode=${m.goodsCode }'">회원 장바구니</button>
+						</c:otherwise>
+					</c:choose>
 					<button type="button" onclick="location.href='${pageContext.request.contextPath}/order/addOrder?goodsCode=${m.goodsCode}'">바로구매</button>
 				</c:if>
 			</c:otherwise>

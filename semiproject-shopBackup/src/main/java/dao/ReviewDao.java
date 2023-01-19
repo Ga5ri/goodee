@@ -86,7 +86,10 @@ public class ReviewDao {
 	// 페이징을 위한 주문목록 페이지 수
 	public int cntReviewList (Connection conn, String customerId) throws Exception {
 		int cnt = 0;
-		String sql = "SELECT COUNT(*) cnt FROM review WHERE customer_id = ?";
+		String sql = "SELECT COUNT(*) cnt"
+				+ "		 FROM review r"
+				+ "		 INNER JOIN orders o ON o.order_code = r.order_code"
+				+ "		 WHERE o.customer_id = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, customerId);
 		
@@ -100,7 +103,10 @@ public class ReviewDao {
 	// 페이징+검색을 위한 주문목록 페이지 수
 	public int cntReviewList (Connection conn, String customerId, String word) throws Exception {
 		int cnt = 0;
-		String sql = "SELECT COUNT(*) cnt FROM review WHERE customer_id = ? AND review_memo LIKE ?";
+		String sql = "SELECT COUNT(*) cnt"
+				+ "		 FROM review r"
+				+ "		 INNER JOIN orders o ON o.order_code = r.order_code"
+				+ "		 WHERE o.customer_id = ? AND review_memo LIKE ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, customerId);
 		stmt.setString(2, "%"+word+"%");
@@ -119,25 +125,28 @@ public class ReviewDao {
 		String sql = "INSERT INTO review(order_code, review_memo, createdate)"
 				+ " 		VALUES (?, ?, NOW())"; //sysdate는 시시각각 변함, now는 한 번 호출되면 변하지 않음
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, review.getGoodsCode());
+		stmt.setInt(1, review.getOrderCode());
 		stmt.setString(2, review.getReviewMemo());
 		
 		row = stmt.executeUpdate();
 		return row;
 	}
 	// 리뷰추가를 위한 검색
-	public Review selectInfoForReview(Connection conn, int goodsCode) throws Exception {
+	public Review selectInfoForReview(Connection conn, int orderCode) throws Exception {
 		Review r = null;
-		System.out.println(goodsCode + "어디인가");
-		String sql = "SELECT goods_name goodsName, gi.filename filename"
-				+ "		 FROM goods g INNER JOIN goods_img gi ON g.goods_code = gi.goods_code"
-				+ "		 WHERE g.goods_code = ?";
+		System.out.println(orderCode + "어디인가");
+		String sql = "SELECT o.order_code orderCode, g.goods_name goodsName, gi.filename filename"
+				+ "		 FROM orders o"
+				+ "		 INNER JOIN goods g ON o.goods_code = g.goods_code"
+				+ "		 INNER JOIN goods_img gi ON g.goods_code = gi.goods_code"
+				+ "		 WHERE o.order_code = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
-		stmt.setInt(1, goodsCode);
+		stmt.setInt(1, orderCode);
 		
 		ResultSet rs = stmt.executeQuery();
 		if(rs.next()) {
 			r = new Review();
+			r.setOrderCode(rs.getInt("OrderCode"));
 			r.setGoodsName(rs.getString("goodsName"));
 			r.setFilename(rs.getString("filename"));
 			System.out.println("리뷰를 위한 : " + rs.getString("goodsName") + rs.getString("filename"));

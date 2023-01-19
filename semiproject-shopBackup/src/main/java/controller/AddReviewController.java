@@ -29,15 +29,18 @@ public class AddReviewController extends HttpServlet {
 		}
 		
 		// 상품번호 필요
-		int goodsCode = Integer.parseInt(request.getParameter("goodsCode"));
+		int orderCode = Integer.parseInt(request.getParameter("orderCode"));
 		Review reviewInfo = null;
+		System.out.println(orderCode);
 		
 		this.reviewService = new ReviewService();
-		reviewInfo = reviewService.getInfoForAddReviewService(goodsCode);
+		reviewInfo = reviewService.getInfoForAddReviewService(orderCode);
 		System.out.println("reviewInfo : " + reviewInfo);
 				
 		// view와 공유할 모델데이터 설정
+		request.setAttribute("orderCode", reviewInfo.getOrderCode());
 		request.setAttribute("filename", reviewInfo.getFilename());
+		request.setAttribute("goodsCode", reviewInfo.getGoodsCode());
 		request.setAttribute("goodsName", reviewInfo.getGoodsName());
 		request.getRequestDispatcher("/WEB-INF/view/review/addReviewForm.jsp").forward(request, response);
 	}
@@ -55,18 +58,20 @@ public class AddReviewController extends HttpServlet {
 			return;
 		}
 		
-		int goodsCode = Integer.parseInt(request.getParameter("goodsCode"));
+		int orderCode = Integer.parseInt(request.getParameter("orderCode"));
 		String goodsName = request.getParameter("goodsName");
+		String reviewMemo = request.getParameter("reviewMemo");
 		String createdate = request.getParameter("createdate");
 		
 		Review review= new Review();
-		review.setGoodsCode(goodsCode);
+		review.setOrderCode(orderCode);
 		review.setGoodsName(goodsName);
+		review.setReviewMemo(reviewMemo);
 		review.setCreatedate(createdate);
 
 		// 모델호출
 		reviewService = new ReviewService();
-		reviewService.addReviewService(review, goodsCode);
+		reviewService.addReviewService(review);
 		
 		// view
 		response.sendRedirect(request.getContextPath()+"/review/reviewList");

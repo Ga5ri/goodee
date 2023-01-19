@@ -72,8 +72,7 @@ public class LoginCartController extends HttpServlet {
 		Customer returnCustomer = customerService.login(customer);
 		// 결과값 있다면
 		session.setAttribute("loginCustomer", returnCustomer);
-	    response.sendRedirect(request.getContextPath() + "/cart/customerCartList");
-	    return;
+	    response.sendRedirect(request.getContextPath() + "/cart/customerCartList?action=cartList");
 		
 	}
 

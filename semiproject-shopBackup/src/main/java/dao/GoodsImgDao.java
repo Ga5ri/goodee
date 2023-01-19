@@ -11,8 +11,10 @@ public class GoodsImgDao {
 	public int modifyGoodsImg(Connection conn, GoodsImg goodsImg) throws Exception {
 		int row = 0;
 		String sql = "UPDATE goods_img"
-				+ 	" SET filename = ?, content_type = ?, origin_name = ?"
-				+ 	" WHERE goods_code = ?";
+				+ " SET filename = ?"
+				+ "		, content_type = ?"
+				+ "		, origin_name = ?"
+				+ " WHERE goods_code = ?";
 		PreparedStatement stmt = conn.prepareStatement(sql);
 		stmt.setString(1, goodsImg.getFilename());
 		stmt.setString(2, goodsImg.getContentType());

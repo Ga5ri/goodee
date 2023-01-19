@@ -40,13 +40,11 @@ public class NoticeListController extends HttpServlet {
 		// System.out.println(totalCnt+"<-totalCnt값");
 		
 		int lastPage = totalCnt / rowPerPage;
-		if(endPage > lastPage) {
-			endPage = lastPage;
-		}
-		
+		System.out.println(totalCnt + " <-- totalCnt");
 		if(totalCnt % rowPerPage != 0) {
 			lastPage++;
 		}
+
 		request.setAttribute("list", list);
 		request.setAttribute("beginRow", beginRow);
 		request.setAttribute("currentPage", currentPage);

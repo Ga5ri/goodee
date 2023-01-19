@@ -46,12 +46,30 @@
 					<a href = "${pageContext.request.contextPath }/order/orderList">
 						내주문
 					</a>
-					<span>&nbsp;</span>				
-					<a href = "${pageContext.request.contextPath }/">
-						장바구니(미구현)
-					</a>
 				</c:if>
-				<span>&nbsp;</span>
+				
+					<span>&nbsp;</span>
+					
+				<c:choose>
+					<c:when test="${loginCustomer == null }">
+						<a href = "${pageContext.request.contextPath }/cart/nonMemberCartList?action=cartList">
+							장바구니(비회원)
+						</a>
+						
+						<span>&nbsp;</span>
+						
+					</c:when>
+					<c:otherwise>
+						<a href = "${pageContext.request.contextPath }/cart/customerCartList?action=cartList">
+							장바구니(회원)
+						</a>
+					
+						<span>&nbsp;</span>
+						
+					</c:otherwise>
+				</c:choose>					
+				
+				
 				<a href = "${pageContext.request.contextPath }/notice/noticeList">
 					공지사항
 				</a>

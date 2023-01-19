@@ -130,7 +130,7 @@ public class ReviewService {
 	}
 	
 	// 리뷰쓰기
-	public int addReviewService(Review review, int goodsCode) {
+	public int addReviewService(Review review) {
 		int row = 0;
 		reviewDao = new ReviewDao();
 		Connection conn = null;
@@ -160,7 +160,7 @@ public class ReviewService {
 	}
 	
 	// 리뷰쓰기 전 사전정보
-	public Review getInfoForAddReviewService(int goodsCode) {
+	public Review getInfoForAddReviewService(int orderCode) {
 		Review review = new Review();
 		reviewDao = new ReviewDao();
 		Connection conn = null;
@@ -168,7 +168,7 @@ public class ReviewService {
 		try {
 			conn = DBUtil.getConnection();
 			conn.setAutoCommit(false);
-			review = reviewDao.selectInfoForReview(conn, goodsCode);
+			review = reviewDao.selectInfoForReview(conn, orderCode);
 			System.out.println("review info service : " + review);
 			conn.commit();
 		} catch (Exception e) {

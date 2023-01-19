@@ -18,13 +18,16 @@ public class Orders {
 	private String pointKind;
 	private int customerPoint;
 	private int point;
+	private String filename;
+	
 	public Orders() {
 		super();
 	}
-	
+
 	public Orders(int orderCode, int goodsCode, String goodsName, int goodsPrice, String soldout, String customerId,
 			String customerName, String customerPhone, int addressCode, String address, int orderQuantity,
-			int orderPrice, String orderState, String createdate, String pointKind, int customerPoint, int point) {
+			int orderPrice, String orderState, String createdate, String pointKind, int customerPoint, int point,
+			String filename) {
 		super();
 		this.orderCode = orderCode;
 		this.goodsCode = goodsCode;
@@ -43,8 +46,9 @@ public class Orders {
 		this.pointKind = pointKind;
 		this.customerPoint = customerPoint;
 		this.point = point;
+		this.filename = filename;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Orders [orderCode=" + orderCode + ", goodsCode=" + goodsCode + ", goodsName=" + goodsName
@@ -52,7 +56,7 @@ public class Orders {
 				+ ", customerName=" + customerName + ", customerPhone=" + customerPhone + ", addressCode=" + addressCode
 				+ ", address=" + address + ", orderQuantity=" + orderQuantity + ", orderPrice=" + orderPrice
 				+ ", orderState=" + orderState + ", createdate=" + createdate + ", pointKind=" + pointKind
-				+ ", customerPoint=" + customerPoint + ", point=" + point + "]";
+				+ ", customerPoint=" + customerPoint + ", point=" + point + ", filename=" + filename + "]";
 	}
 
 	public int getOrderCode() {
@@ -156,6 +160,12 @@ public class Orders {
 	}
 	public void setPoint(int point) {
 		this.point = point;
-	}	
+	}
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 }
 

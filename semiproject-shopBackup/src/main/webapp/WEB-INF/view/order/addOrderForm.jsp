@@ -26,7 +26,7 @@
 	    }); /* 	var b = a.replace(/(^0+)/, ""); */
 
 		/* 결제가격 계산 */
-		$( '#goodsPrice, #orderQuantity, #usePoint' ).on("input", function() {
+		$( '#goodsPrice, #orderQuantity, #usePoint' ).on("blur", function() {
 		    let goodsPrice = Number($('#goodsPrice').val());
 		    let orderQuantity = Number($('#orderQuantity').val());
 		    let usePoint = Number($('#usePoint').val());
@@ -74,6 +74,14 @@
 				<td><input type="text" id="goodsPrice" name="goodsPrice" value="${goodsPrice}" readonly></td>				
 			</tr>
 			<tr>
+				<th>주문자</th>
+				<td><input type="text" id="customerName" name="customerName" value="${customerName}" readonly></td>				
+			</tr>
+			<tr>
+				<th>연락처</th>
+				<td><input type="text" id="customerPhone" name="customerPhone" value="${customerPhone}" readonly></td>				
+			</tr>
+			<tr>
 				<th>배송지</th> <!-- customerAddress에서 받아옴 -->
 				<td>
 					<select id="addressCode" name="addressCode">
@@ -103,7 +111,7 @@
 			</tr>
 			<tr>
 				<th>결제가격</t0h>
-				<td><input type="number" id="orderPrice" name="orderPrice" readonly></td> <!-- goods에서 받아옴 -->
+				<td><input type="number" id="orderPrice" name="orderPrice" min="0" readonly></td> <!-- goods에서 받아옴 -->
 			</tr>
 			<tr>
 				<th>주문일</th>

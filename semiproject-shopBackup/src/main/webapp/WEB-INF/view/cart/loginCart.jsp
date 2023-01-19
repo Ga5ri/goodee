@@ -123,7 +123,7 @@
 		    
 				<!--Customer 로그인-->
 		        <div id="tab1" class="tab_content">
-		            <form id="signinForm" action="${pageContext.request.contextPath}/login" method="post">
+		            <form id="signinForm" action="${pageContext.request.contextPath}/cart/loginCart" method="post">
 					<div>
 						<label>Login ID&nbsp;</label>
 						<input id="custoemrId" type="text"  name="customerId">

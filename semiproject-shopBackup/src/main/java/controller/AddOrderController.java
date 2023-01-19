@@ -57,6 +57,8 @@ public class AddOrderController extends HttpServlet {
 		request.setAttribute("goodsName", goods.getGoodsName());
 		request.setAttribute("goodsPrice", goods.getGoodsPrice());
 		request.setAttribute("loginId", customerId);
+		request.setAttribute("customerName", customer.getCustomerName());
+		request.setAttribute("customerPhone", customer.getCustomerPhone());
 		request.setAttribute("customerAddress", customerAddress);
 		request.setAttribute("point", customer.getPoint());
 		request.setAttribute("customer", customer);
