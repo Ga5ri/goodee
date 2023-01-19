@@ -26,6 +26,10 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath }/resources/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="${pageContext.request.contextPath }/resources/css/style.css" type="text/css">
     
+	<!-- jQuery -->
+	<!-- CDN 주소 추가 방식 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    
 	<style>
 		.imgCart {
 			width : 150px;
@@ -34,6 +38,10 @@
 	</style>
    
     <script>
+    
+    
+    
+    
 		$(document).ready(function() {
     
 			for(let i=1; i<=count; i+=1) {
@@ -47,6 +55,8 @@
 				$('#calPrice' + i).prepend(calPrice + '원');
 				
 			}
+			
+
 			
 		    var proQty = $('.pro-qty-3');
 		    proQty.prepend('<span class="fa fa-angle-left dec qtybtn"></span>');
@@ -67,6 +77,7 @@
 		        $button.parent().find('input').val(newVal);
 		    });
 			
+
 			
 			
 			
@@ -418,6 +429,8 @@
     <script src="${pageContext.request.contextPath }/resources/js/mixitup.min.js"></script>
     <script src="${pageContext.request.contextPath }/resources/js/owl.carousel.min.js"></script>
     <script src="${pageContext.request.contextPath }/resources/js/main.js"></script>
+    
+    
 </body>
 
 </html>
