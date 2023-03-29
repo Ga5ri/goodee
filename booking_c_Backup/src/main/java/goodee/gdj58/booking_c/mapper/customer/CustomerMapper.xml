@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="goodee.gdj58.booking_c.mapper.customer.CustomerMapper">
+	<!-- 휴면계정 아이디 조회 -->
+	<select id="customerLastLogin" resultType="int">
+	SELECT DATEDIFF(CURDATE(), customer_last_login_date) 
+	FROM customer 
+	WHERE customer_id = #{customerId}
+	</select>
+	
+	<!-- 휴면계정 설정 -->
+	<update id="updateCustomerActive" parameterType="goodee.gdj58.booking_c.vo.TotalId">
+	UPDATE total_id
+	SET total_id_active = #{totalIdActive} AND total_id_deactive_memo = #{totalIdDeactiveMemo} AND total_id_deactive_date = NOW()
+	WHERE id = #{id}
+	</update>
+	
+	<!-- 마지막 로그인 일자 -->
+	<select id="selectLastLogin" resultType="java.util.Map">
+	SELECT customer_id cusId, customer_last_login_date lastLoginDate
+	FROM customer
+	</select>
+	
+	<!-- 로그인 일자 업데이트 -->
+	<update id="updateCustomerLastLogin" parameterType="java.lang.String">
+	UPDATE customer
+	SET customer_last_login_date = NOW()
+	WHERE customer_id = #{customerId}
+	</update>
+	
+	<!-- 리뷰 작성(사진등록) -->
+	<insert id="insertReviewImg" parameterType="goodee.gdj58.booking_c.vo.ReviewImg">
+		INSERT INTO reviewImg(
+			booking_no
+			, review_img_save_name
+			, review_img_origin_name
+			, review_img_kind
+			, review_img_size
+			) VALUES (
+				#{bookingNo}
+				, #{reviewImgSaveName}
+				, #{reviewImgOriginName}
+				, #{reviewImgKind}
+				, #{reviewImgSize}
+			);
+	</insert>
+	
+	<!-- 리뷰 작성 -->
+	<insert id="insertReview" parameterType="goodee.gdj58.booking_c.vo.Review">
+		INSERT INTO review(
+			booking_no
+			, review_memo
+			, star_rating
+			) VALUES (
+				#{bookingNo}
+				, #{reviewMemo}
+				, #{starRating}
+			);
+	</insert>
+	
+	<!-- 예약내역 상세보기 -->
+	<select id="getBookingOne" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT
+			b.booking_no bookingNo
+			, b.customer_id customerId
+			, b.booking_company_id bkcId
+			, b.booking_date bkDate
+			, b.booking_request_date bkRequestDate
+			, b.product_no productNo
+			, b.option_no optionNo
+			, b.booking_price kPrice
+			, b.booking_use_point bkUsePoint
+			, b.booking_rank_discount bkRankDiscount
+			, b.booking_total_price bkTotalPrice
+			, b.booking_state bkState
+			, b.booking_people bkPeople
+			, bp.booking_product_no bkProductNo
+			, bp.booking_company_id bkCompanyId
+			, bp.booking_product_name bkProductName
+			, bp.booking_product_price bkProductPrice
+			, bpo.booking_product_no bkProductNo
+			, bpo.booking_product_option_name bkProductOptionName
+			, bpo.booking_product_option_memo bkProductOptionMemo
+			, bpo.booking_product_option_price bkProductOptionPrice
+			, bkc.booking_company_id bkCompanyId
+			, bkc.booking_company_name bkCompanyName
+			, bkc.booking_company_ceo bkCompanyCeo
+			, bkc.booking_company_phone bkCompanyPhone
+			, bkc.booking_company_address bkCompanyAddress
+			, c.customer_id customerId
+			, c.customer_name customerName
+			, c.customer_phone customerPhone
+			, c.customer_email customerEmail
+			FROM booking b
+			LEFT OUTER JOIN booking_product bp
+			ON b.booking_company_id = bp.booking_company_id
+			LEFT OUTER JOIN booking_product_option bpo
+			ON bp.booking_product_no = bpo.booking_product_no
+			LEFT OUTER JOIN booking_company bkc
+			ON bp.booking_company_id = bkc.booking_company_id
+			LEFT OUTER JOIN customer c
+			ON b.customer_id = c.customer_id
+			WHERE b.customer_id = #{customerId} AND bkc.booking_company_name = #{bookingCompanyName} AND b.booking_request_date = #{bookingRequestDate};	
+	</select>
+	
+	<!-- 패스워드 찾기(수정) -->
+	<update id="updateCustomerPw" parameterType="goodee.gdj58.booking_c.vo.Customer">
+		UPDATE customer
+		SET customer_pw = PASSWORD(#{customerPw})
+		WHERE customer_email = #{customerEmail} AND customer_id = #{customerId}
+	</update>
+	
+	<!-- 아이디 찾기 -->
+	<select id="selectCustomerId" parameterType="goodee.gdj58.booking_c.vo.Customer" resultType="java.lang.String">
+		SELECT customer_id customerId
+		FROM customer
+		WHERE customer_email = #{customerEmail} AND customer_name = #{customerName};
+	</select>
+	
+	<!-- 고객 이메일 조회 -->
+	<select id="selectCustomerEmail" parameterType="goodee.gdj58.booking_c.vo.Customer" resultType="int">
+		SELECT COUNT(customer_email) cnt
+		FROM customer
+		WHERE customer_email = #{customerEmail}
+		<choose>
+			<when test="customerName != null and customerId == null">
+				AND customer_name = #{customerName}
+			</when>
+			<when test="customerId != null and customerName == null">
+				AND customer_id = #{customerId}		
+			</when>
+		</choose>
+	</select>
+	
+	<!-- 고객 로그인 -->
+	<select id="selectCustomer" parameterType="goodee.gdj58.booking_c.vo.Customer" resultType="goodee.gdj58.booking_c.vo.Customer">
+		SELECT
+			customer_id customerId
+			, customer_name customerName
+			, customer_nickname customerNickName
+			, customer_phone customerPhone
+			, customer_email customerEmail
+			, customer_point customerPoint
+			, customer_rank customerRank
+			, customer_pay customerPay
+		FROM customer
+		WHERE customer_id = #{customerId} AND customer_pw = PASSWORD(#{customerPw})
+	</select>
+	
+	<!-- 고객 회원가입(토탈ID) -->
+	<insert id="insertTotalId" parameterType="goodee.gdj58.booking_c.vo.TotalId">
+		INSERT INTO total_id(
+			id
+			, total_id_kind
+			, total_id_active
+			) VALUES (
+				#{id}
+				, #{totalIdKind}
+				, #{totalIdActive}
+			)
+	</insert>
+	
+	<!-- 고객 회원가입(사진) -->
+	<insert id="insertCustomerImg" parameterType="goodee.gdj58.booking_c.vo.CustomerImg">
+		INSERT INTO customer_img(
+			customer_id
+			, customer_img_save_name
+			, customer_img_origin_name
+			, customer_img_kind
+			, customer_img_size
+			) VALUES (
+				#{customerId}
+				, #{customerImgSaveName}
+				, #{customerImgOriginName}
+				, #{customerImgKind}
+				, #{customerImgSize}
+			)
+	</insert>
+
+	<!-- 고객 회원가입 -->
+	<insert id="insertCustomer" parameterType="goodee.gdj58.booking_c.vo.Customer">
+		INSERT INTO customer(
+			customer_id
+			, customer_pw
+			, customer_name
+			, customer_nickname
+			, customer_postcode
+			, customer_address
+			, customer_phone
+			, customer_email
+			, customer_pay
+			, customer_point
+			, customer_birth
+			, customer_gender
+			, customer_email_marketing_accept
+			, customer_info_agree
+			) VALUES (
+				#{customerId}
+				, PASSWORD(#{customerPw})
+				, #{customerName}
+				, #{customerNickname}
+				, #{customerPostcode}
+				, #{customerAddress}
+				, #{customerPhone}
+				, #{customerEmail}
+				, 0
+				, 0
+				, #{customerBirth}
+				, #{customerGender}
+				, #{emailMarketingAccept}
+				, #{infoAgree}
+			)
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	<!--예약 확정시 상품 사진  -->
+	<select id="bookingAfterProductImg" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT bkp.booking_product_name bkpName
+				, if(bkpi.booking_product_img_save_name IS NULL,'상품사진없음',bkpi.booking_product_img_save_name) bkpiSave
+		FROM booking_product bkp
+			LEFT OUTER JOIN booking_product_img bkpi ON bkp.booking_product_no = bkpi.booking_product_no
+		WHERE bkp.booking_company_id = #{bkcId} AND bkp.booking_product_no = #{bkpNo}
+	</select>
+	<!-- 예약 확정시 고객 포인트 업데이트 -->
+	<update id="updatePointAfterBooking" parameterType="java.util.Map">
+		
+		UPDATE customer cus
+		SET cus.customer_point = #{point}
+			, cus.customer_pay = #{pay}
+			
+		WHERE cus.customer_id = #{cusId}
+	</update>
+	
+	
+	
+	<!-- 날짜형 예약시 기간 출력 -->
+	<select id="bookingDayList" resultType="java.util.Map" parameterType="String">
+		select selecteDate from 
+			 (select adddate('2010-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selecteDate from
+			 (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,
+			 (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,
+			 (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,
+			 (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,
+			 (select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v
+		where selecteDate 
+		between #{startDate} and #{endDate}
+	</select>
+	
+	<!-- 날짜형 예약시 일 수 구하기 -->
+	<select id="dayCalculation" resultType="int" parameterType="String">
+		SELECT DATEDIFF(#{endDate},#{startDate});
+	</select>
+	
+	
+	<!-- 결제 후 예약내역 등록 -->
+	<insert id="addBooking" parameterType="goodee.gdj58.booking_c.vo.Booking">
+		INSERT INTO booking (customer_id
+							,booking_company_id
+							,booking_date
+
+							,product_no
+							,option_no
+							,booking_price
+							,booking_use_point
+							,booking_rank_discount
+							,booking_total_price
+							,booking_state
+							,booking_people
+							) 
+					VALUES(#{customerId}
+							,#{companyId}
+							,#{requestDate}
+
+							,#{productNo}
+							,#{optionNo}
+							,#{price}
+							,#{usePoint}
+							,#{rankDiscount}
+							,#{totalPrice}
+							,'예약승인대기'
+							,#{bookingPeople}
+							)
+	</insert>
+	
+	
+	<!-- 옵션 리스트 -->
+	<select id="getBookingOptionList" resultType="java.util.Map">
+		SELECT booking_product_option_no optionNo
+			, booking_product_option_name optionName
+		FROM booking_product_option bkpo
+	</select>
+
+	<!-- 결제 페이지 상품 옵션 가격구하기 -->
+	<select id="totalOptionPrice" resultType="int" parameterType="java.util.Map">
+				SELECT 
+		<choose>
+			<when test="!paramMap.isEmpty()">
+				SUM(bkpo.booking_product_option_price) sumOptionPrice
+				FROM booking_product_option bkpo
+				WHERE bkpo.booking_product_no = #{bkpNo} 
+				<foreach item="bkpoNo" collection="paramMap" open="AND bkpo.booking_product_option_no IN (" close=")" separator=",">
+							#{bkpoNo}
+				</foreach>
+			</when>
+			<otherwise>
+				if(bkpo.booking_product_option_price IS NULL,0,0) sumOptionPrice
+				FROM booking_product_option bkpo
+				WHERE bkpo.booking_product_no = #{bkpNo} 
+				GROUP BY sumOptionPrice
+			</otherwise>
+		</choose>
+		
+<!-- 		<if test="paramMap == null or paramMap == 0">
+			SELECT if(bkpo.booking_product_option_price IS NULL,0,0) sumOptionPrice
+			FROM booking_product_option bkpo
+			WHERE bkpo.booking_product_no = #{bkpNo} 
+			GROUP BY sumOptionPrice
+		</if>
+		<if test="paramMap != null or paramMap != 0">
+		SELECT SUM(bkpo.booking_product_option_price) sumOptionPrice
+		FROM booking_product_option bkpo
+		WHERE bkpo.booking_product_no = #{bkpNo} 
+			<foreach item="bkpoNo" collection="paramMap" open="AND bkpo.booking_product_option_no IN (" close=")" separator=",">
+				#{bkpoNo}
+			</foreach>
+		</if> -->
+	</select>
+	
+	<!-- 결제페이지 - 사업자정보 -->
+	<select id="getBookingPaymentCompany" resultType="java.util.Map" parameterType="String">
+		SELECT booking_company_id bkcId
+				, booking_company_name bkcName
+				, booking_company_number bkcNumber
+				, booking_company_phone bkcPhone
+				, booking_company_address bkcAddress
+		FROM booking_company bkc
+		WHERE bkc.booking_company_id = #{bkcId}
+	</select>
+	
+	<!-- 예약시 예약시간 리스트-->
+	<select id="getBookingProductTimeList" resultType="java.util.Map" parameterType="String">
+		WITH RECURSIVE CTE  AS (
+        SELECT (SELECT bkcd.booking_company_opentime bkcdOpen FROM booking_company_detail bkcd WHERE bkcd.booking_company_id = #{bkcId}) AS DT
+        FROM DUAL
+        UNION ALL
+        SELECT DATE_ADD(DT, INTERVAL 1 HOUR)
+        FROM CTE
+        WHERE DT &#60; (SELECT date_add(bkcd.booking_company_closetime, INTERVAL -1 hour) bkcdClose FROM booking_company_detail bkcd WHERE bkcd.booking_company_id = #{bkcId})
+		)
+		SELECT 
+				DT bkpTime
+		FROM CTE
+	</select>
+	
+	<!-- 에약시 상품정보 확인 -->
+	<select id="getBookingProductInfo" resultType="java.util.Map" parameterType="String">
+		SELECT  bkp.booking_product_no bkpNo
+				, bkp.booking_product_name bkpName
+				, bkp.booking_product_max_people bkpMax
+				, bkp.booking_product_min_people bkpMin
+				, bkp.booking_product_price bkpPrice
+		FROM booking_product bkp
+		WHERE bkp.booking_product_name = #{bkpName}  AND bkp.booking_company_id = #{bkcId}
+	
+	</select>	
+	<!-- 상품 예약 옵션 리스트 -->
+	<select id="getBookingProductOptionList" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT booking_product_option_no bkpoNo
+				, bkp.booking_product_no bkpNo
+				, bkp.booking_product_name bkpName
+				, bkp.booking_product_max_people bkpMax
+				, bkp.booking_product_min_people bkpMin
+				, bkpo.booking_product_option_name bkpoName
+				, bkpo.booking_product_option_memo bkpoMemo
+				, bkpo.booking_product_option_price bkpoPrice 
+		FROM booking_product bkp
+				INNER JOIN booking_product_option bkpo ON bkp.booking_product_no = bkpo.booking_product_no
+		WHERE bkp.booking_product_name = #{bkpName} AND bkp.booking_company_id = #{bkcId}
+	</select>
+	
+	
+	<!-- 상품 예약 시간 선택 페이지 -->
+	<select id="getBookingProductSelectTime" resultType="java.util.Map" parameterType="String">
+		SELECT bkc.booking_company_id bkcId
+				, bkc.booking_company_name bkcName
+				, if(bkci.booking_company_img_save_name IS NULL, '기업사진없음',bkci.booking_company_img_save_name ) bkciSave
+				, bkct.booking_company_type_content bkcdType
+				, bkct.group_no 
+				, bkcp.booking_product_no bkcProductNo
+				, bkcp.booking_product_name bkcProductName
+		FROM booking_company bkc 
+				INNER JOIN booking_product bkcp ON bkc.booking_company_id = bkcp.booking_company_id
+				INNER JOIN booking_company_detail bkcd ON bkc.booking_company_id = bkcd.booking_company_id
+				INNER JOIN booking_company_type bkct ON bkcd.booking_company_type_no = bkct.booking_company_type_no
+				LEFT OUTER JOIN booking_company_img bkci ON bkc.booking_company_id = bkci.booking_company_id
+		WHERE bkc.booking_company_id = #{bkcId}
+		
+		GROUP BY bkciSave
+	
+	</select>
+	
+	<!-- 에약업체 세부정보 지도 -->
+	<select id="getBookingCompanyDetailMap" resultType="java.util.Map" parameterType="String">
+		SELECT bkc.booking_company_name bkcName
+				, bkc.booking_company_address bkcAddress
+		FROM booking_company bkc
+		WHERE bkc.booking_company_id = #{bkcId}
+		
+	</select>
+	
+	<!-- 예약업체 세부정보 리뷰 -->
+	<select id="getBookingCompanyDetailReview" resultType="java.util.Map" parameterType="String">
+		SELECT bk.booking_date bkDate
+				, bk.customer_id bkCustomerId
+				, ct.customer_nickname ctNick
+				, if(cti.customer_img_save_name IS NULL, '고객사진없음', cti.customer_img_save_name) ctiSave
+				, rv.review_memo rvMemo
+				, rv.star_rating rvStar
+				, rv.createdate rvCreatedate
+				, if(rvi.review_img_save_name IS NULL, '리뷰사진없음', rvi.review_img_save_name) rviSave
+				, bkp.booking_product_name bkpName
+		FROM booking bk
+			INNER JOIN booking_product bkp ON bk.product_no = bkp.booking_product_no 
+			inner JOIN review rv ON bk.booking_no = rv.booking_no
+			LEFT OUTER JOIN customer ct ON bk.customer_id = ct.customer_id
+			LEFT OUTER JOIN customer_img cti ON bk.customer_id = cti.customer_id
+			LEFT OUTER JOIN review_img rvi ON rv.booking_no = rvi.booking_no
+		WHERE bk.booking_company_id = #{bkcId}
+	</select>
+	<!-- 예약업체 세부정보 예약 -->
+	<select id="getBookingCompanyDetailBooking" resultType="java.util.Map" parameterType="String">
+		SELECT bkc.booking_company_id bkcId
+				, bkc.booking_company_name bkcName
+				, bkp.booking_product_name bkpName
+				, bkp.booking_product_price bkpPrice
+				, if(bkpi.booking_product_img_save_name IS NULL,'상품사진없음',bkpi.booking_product_img_save_name) bkpiSave
+				, bkct.group_no bkctNo
+		FROM booking_company bkc
+			INNER JOIN booking_company_detail bkcd ON bkc.booking_company_id = bkcd.booking_company_id
+			INNER JOIN booking_company_type bkct ON bkcd.booking_company_type_no = bkct.booking_company_type_no
+			INNER JOIN booking_product bkp ON bkc.booking_company_id = bkp.booking_company_id
+			LEFT OUTER  JOIN booking_product_img bkpi ON bkp.booking_product_no = bkpi.booking_product_no
+		WHERE bkc.booking_company_id = #{bkcId}
+		GROUP BY bkpName
+	</select>
+	
+	<!-- 예약업체 세부정보 홈 -->
+	<select id="getBookingCompanyDetailHome" resultType="java.util.Map" parameterType="String">
+		SELECT bkc.booking_company_address bkcAddress
+				, bkc.booking_company_phone bkcPhone
+				, bkcd.booking_company_addition_service bkcdService
+				, bkcd.booking_company_opentime bkcdOpen
+				, bkcd.booking_company_closetime bkcdClose
+				, if(bkcoff.booking_company_offday_date IS NULL, '연중무휴',
+				(case DAYOFWEEK(bkcoff.booking_company_offday_date)
+		                    when '1' then '일요일'
+		                    when '2' then '월요일'
+		                    when '3' then '화요일'
+		                    when '4' then '수요일'
+		                    when '5' then '목요일'
+		                    when '6' then '금요일'
+		                    when '7' then '토요일'
+		                END)) offday
+		FROM booking_company bkc
+			INNER JOIN booking_company_detail bkcd ON bkc.booking_company_id = bkcd.booking_company_id
+			LEFT OUTER JOIN booking_company_offday bkcoff ON bkc.booking_company_id = bkcoff.booking_company_id
+		WHERE bkc.booking_company_id = #{bkcId}
+		GROUP BY offday
+	</select>
+	<!-- 예약업체 세부정보 공통 -->
+	<select id="getBookingCompanyDetailCommon" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT bk.booking_company_id bkcId
+			, bkc.booking_company_name bkcName
+			, rv.star_rating rvStar
+			, COUNT(bk.booking_company_id) countReview
+			, SUM( rv.star_rating) sumStar
+			,if((SELECT bkci.booking_company_img_save_name bkciSave
+				FROM booking_company bkc
+					INNER JOIN booking_company_img bkci ON bkc.booking_company_id = bkci.booking_company_id
+				WHERE bkc.booking_company_id = #{bkcId} AND bkci.booking_company_img_level = #{bkciLevel}) IS NULL, '기업사진없음', 
+				(SELECT bkci.booking_company_img_save_name bkciSave
+				FROM booking_company bkc
+					INNER JOIN booking_company_img bkci ON bkc.booking_company_id = bkci.booking_company_id
+				WHERE bkc.booking_company_id = #{bkcId} AND bkci.booking_company_img_level = #{bkciLevel})
+				 ) bkciSave
+			,(SELECT bkct.booking_company_type_content bkcType
+				FROM booking_company_detail bkcd
+					INNER JOIN booking_company_type bkct ON bkcd.booking_company_type_no = bkct.booking_company_type_no
+				WHERE booking_company_id = #{bkcId}) bkcType
+		FROM booking bk 
+			INNER JOIN booking_company bkc ON bk.booking_company_id = bkc.booking_company_id
+			INNER JOIN review rv ON bk.booking_no = rv.booking_no
+		WHERE bk.booking_company_id = #{bkcId}
+	</select>
+	
+	<!-- 예약 업체 총 수 -->
+	<select id="bookingCompanyCount" resultType="int" parameterType="String">
+		SELECT COUNT(a.bkcName) count
+	
+		FROM ( 	SELECT  bkc.booking_company_id bkcId
+				       , bkc.booking_company_name bkcName
+				       , bkct.booking_company_type_content bkcdType
+				       , if(bkci.booking_company_img_save_name IS NULL,'업체사진없음',bkci.booking_company_img_save_name) bkciSave
+				       , bkcd.booking_company_addition_service bkcdAddService
+				       , if(rv.review_memo IS NULL, '리뷰없음', rv.review_memo) rvMemo 
+				       , if(rv.star_rating IS NULL, '별점없음', rv.star_rating) rvRating
+				       , if(rvi.review_img_save_name IS NULL, '리뷰사진없음', rvi.review_img_save_name) rviSave
+				       , if(bkcd.booking_company_opentime &#60;= NOW() AND bkcd.booking_company_closetime >=NOW(), '영업중','영업종료') bkcRunning
+				       , bkci.booking_company_img_level bkciLevel
+				       , bkcd.booking_company_opentime bkcOpen
+				       , bkcd.booking_company_closetime bkcClose
+			      FROM booking_company bkc
+			         INNER JOIN booking_company_detail bkcd ON bkc.booking_company_id = bkcd.booking_company_id
+			         INNER JOIN booking_company_type bkct ON bkcd.booking_company_type_no = bkct.booking_company_type_no
+			         LEFT OUTER JOIN booking_company_img bkci ON bkc.booking_company_id = bkci.booking_company_id
+			         LEFT OUTER JOIN booking bk ON bkc.booking_company_id = bk.booking_company_id
+			         LEFT OUTER JOIN review rv ON bk.booking_no = rv.booking_no
+			         LEFT OUTER JOIN review_img rvi ON rv.booking_no = rvi.booking_no
+				WHERE
+						((bkct.booking_company_type_content LIKE  CONCAT('%',#{searchWord},'%')) OR (bkc.booking_company_name LIKE  CONCAT('%',#{searchWord},'%')))
+						AND (bkcd.booking_company_addition_service LIKE  CONCAT('%',#{optionWord},'%')) 
+						AND (bkci.booking_company_img_level = 'Y' OR bkci.booking_company_img_level IS NULL)
+		     	GROUP BY bkc.booking_company_id
+				ORDER BY bkc.booking_company_name DESC 
+			  )a
+	</select>
+	
+	<!-- 예약업체 리스트 출력 -->
+	<select id="getBookingCompanyList" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT  bkc.booking_company_id bkcId
+		       , bkc.booking_company_name bkcName
+		       , bkct.booking_company_type_content bkcdType
+		       , if(bkci.booking_company_img_save_name IS NULL,'업체사진없음',bkci.booking_company_img_save_name) bkciSave
+		       , bkcd.booking_company_addition_service bkcdAddService
+		       , if(rv.review_memo IS NULL, '리뷰없음', rv.review_memo) rvMemo 
+		       , if(rv.star_rating IS NULL, '별점없음', rv.star_rating) rvRating
+		       , if(rvi.review_img_save_name IS NULL, '리뷰사진없음', rvi.review_img_save_name) rviSave
+		       , if(bkcd.booking_company_opentime &#60;= NOW() AND bkcd.booking_company_closetime >=NOW(), '영업중','영업종료') bkcRunning
+		       , bkci.booking_company_img_level bkciLevel
+		       , bkcd.booking_company_opentime bkcOpen
+		       , bkcd.booking_company_closetime bkcClose
+		FROM booking_company bkc
+		   INNER JOIN booking_company_detail bkcd ON bkc.booking_company_id = bkcd.booking_company_id
+		   INNER JOIN booking_company_type bkct ON bkcd.booking_company_type_no = bkct.booking_company_type_no
+		   LEFT OUTER JOIN booking_company_img bkci ON bkc.booking_company_id = bkci.booking_company_id
+		   LEFT OUTER JOIN booking bk ON bkc.booking_company_id = bk.booking_company_id
+		   LEFT OUTER JOIN review rv ON bk.booking_no = rv.booking_no
+		   LEFT OUTER JOIN review_img rvi ON rv.booking_no = rvi.booking_no
+		WHERE ((bkct.booking_company_type_content LIKE  CONCAT('%',#{searchWord},'%')) OR (bkc.booking_company_name LIKE  CONCAT('%',#{searchWord},'%')))
+				AND (bkcd.booking_company_addition_service LIKE  CONCAT('%',#{optionWord},'%')) AND (bkci.booking_company_img_level = 'Y' OR bkci.booking_company_img_level IS NULL)
+     	GROUP BY bkc.booking_company_id
+		ORDER BY bkc.booking_company_name DESC 
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+</mapper>

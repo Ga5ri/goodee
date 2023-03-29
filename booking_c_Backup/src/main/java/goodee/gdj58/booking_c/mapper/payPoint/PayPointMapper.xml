@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="goodee.gdj58.booking_c.mapper.payPoint.PayPointMapper">
+	<!-- 탈퇴 시 페이 사용 내역에 추가 -->
+	<insert id="usePay" parameterType="goodee.gdj58.booking_c.vo.PaySaveHistory">
+		INSERT pay_use_history(
+			pay_use_history_category
+			, customer_id
+			, price
+		) VALUES (
+			'탈퇴'
+			, #{customerId}
+			, #{price}
+		)
+	</insert>
+	
+	<!-- 페이 충전 + 페이 환불시 보유 페이 업데이트 -->
+	<update id="updatePay" parameterType="goodee.gdj58.booking_c.vo.PaySaveHistory">
+		UPDATE customer
+		SET customer_pay = customer_pay + ${price}
+		WHERE customer_id = #{customerId}
+	</update>
+
+	<!-- 페이 적립 내역에 추가 -->
+	<insert id="insertPay" parameterType="goodee.gdj58.booking_c.vo.PaySaveHistory">
+		INSERT pay_save_history(
+			pay_save_history_category
+			, pay_save_history_content
+			, customer_id
+			, price
+		) VALUES (
+			#{paySaveHistoryCategory}
+			, #{paySaveHistoryContent}
+			, #{customerId}
+			, #{price}
+		)
+	</insert>
+	
+	<!-- 이벤트 포인트 + 포인트 환불시 보유 포인트 업데이트 -->
+	<update id="updatePoint" parameterType="goodee.gdj58.booking_c.vo.PointSaveHistory">
+		UPDATE customer
+		SET customer_point = customer_point + #{point}
+		WHERE customer_id = #{customerId}
+	</update>
+	
+	<!-- 예약 취소 후 사용 포인트 되돌려받음 -->
+	<insert id="insertSavePoint" parameterType="goodee.gdj58.booking_c.vo.PointSaveHistory">
+		INSERT point_save_history(
+			point_save_history_category
+			, point_save_history_content
+			, customer_id
+			, POINT
+		) VALUES (
+			#{pointSaveHistoryCategory}
+			, #{pointSaveHistoryContent}
+			, #{customerId}
+			, #{point}
+		)
+	</insert>
+</mapper>

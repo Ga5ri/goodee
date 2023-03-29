@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="goodee.gdj58.booking_c.mapper.myPage.MyPageMapper">
+	<!-- 고객 프로필사진 수정 -->
+	<update id="updateCustomerImg" parameterType="goodee.gdj58.booking_c.vo.CustomerImg">
+		UPDATE customer_img
+		SET customer_img_save_name = #{customerImgSaveName}
+			, customer_img_origin_name = #{customerImgOriginName}
+			, customer_img_kind = #{customerImgKind}
+			, customer_img_size = #{customerImgSize}
+		WHERE customer_id = #{customerId}
+	</update>
+
+	<!-- 고객 정보 수정 -->
+	<update id="updateCustomerOne" parameterType="goodee.gdj58.booking_c.vo.Customer">
+		UPDATE customer 
+		SET customer_nickname = #{customerNickname}
+			, customer_phone = #{customerPhone}
+			, customer_postcode = #{customerPostcode}
+			, customer_address = #{customerAddress}
+		WHERE customer_id = #{customerId}
+	</update>
+
+	<!-- 회원 탈퇴 시 보유 페이 0 -->
+	<update id="updatePay" parameterType="goodee.gdj58.booking_c.vo.PaySaveHistory">
+		UPDATE customer
+		SET customer_pay = 0
+		WHERE customer_id = #{customerId}
+	</update>
+
+	<!-- 회원 탈퇴 -->
+	<update id="deactiveCustomer" parameterType="goodee.gdj58.booking_c.vo.Customer">
+		UPDATE total_id ti INNER JOIN customer c
+		ON ti.id = c.customer_id
+		SET ti.total_id_active = '비활성화', ti.total_id_deactive_memo = '회원탈퇴', ti.total_id_deactive_date = CURDATE()
+		WHERE id = #{customerId} AND c.customer_pw = PASSWORD(#{customerPw})
+	</update>
+
+	<!-- 페이징용 페이 리스트 데이터 개수 -->
+	<select id="payCnt" resultType="int" parameterType="map">
+		SELECT
+			COUNT(*) cnt
+		FROM (SELECT
+					pay_save_history_category category
+					, customer_id customerId
+					, CONCAT('+', price) price
+				FROM pay_save_history
+				UNION ALL
+				SELECT
+					pay_use_history_category category
+					, customer_id customerId
+					, CONCAT('-', price) price 
+				FROM pay_use_history) t
+		WHERE t.customerId = #{customerId} AND t.category NOT LIKE CONCAT('%', '쇼핑', '%')
+		<if test="priceState != null || priceState != ''">
+			AND t.price LIKE CONCAT('%', #{priceState}, '%')
+		</if>
+	</select>
+
+	<!-- 예약 + 충전 관련 페이 리스트 -->
+	<select id="payList" resultType="map" parameterType="map">
+		SELECT
+			*
+		FROM (SELECT
+					pay_save_history_no payNo
+					, pay_save_history_category category
+					, pay_save_history_content content
+					, customer_id customerId
+					, CONCAT('+', price) price 
+					, createdate
+				FROM pay_save_history
+				UNION ALL
+				SELECT
+					pay_use_history_no payNo
+					, pay_use_history_category category
+					, pay_use_history_content content
+					, customer_id customerId
+					, CONCAT('-', price) price  
+					, createdate
+				FROM pay_use_history) t
+		WHERE t.customerId = #{customerId} AND t.category NOT LIKE CONCAT('%', '쇼핑', '%')
+		<if test="priceState != null || priceState != ''">
+			AND t.price LIKE CONCAT('%', #{priceState}, '%')
+		</if>
+		ORDER BY t.createdate DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+
+	<!-- 페이지용 포인트 리스트 데이터 개수 -->
+	<select id="pointCnt" resultType="int" parameterType="map">
+		SELECT
+			COUNT(*) cnt
+		FROM (SELECT 
+					point_save_history_category category
+					, customer_id customerId
+					, CONCAT('+', POINT) point
+				FROM point_save_history
+				UNION ALL
+				SELECT 
+					point_use_history_category category
+					, customer_id customerId
+					, CONCAT('-', POINT) point
+				FROM point_use_history ) t
+		WHERE t.customerId = #{customerId} AND t.category NOT LIKE CONCAT('%', '쇼핑', '%')
+		<if test="pointState != null || pointState != ''">
+			AND t.point LIKE CONCAT('%', #{pointState}, '%')
+		</if>
+	</select>
+
+	<!-- 예약 + 이벤트 관련 포인트 리스트  -->
+	<select id="pointList" resultType="map" parameterType="map">
+		SELECT
+			*
+		FROM (SELECT 
+					point_save_history_no historyNo
+					, point_save_history_category category
+					, point_save_history_content content
+					, customer_id customerId
+					, CONCAT('+', POINT) point
+					, createdate 
+				FROM point_save_history
+				UNION ALL
+				SELECT 
+					point_use_history_no historyNo
+					, point_use_history_category category
+					, point_use_history_content content
+					, customer_id customerId
+					, CONCAT('-', POINT) point
+					, createdate 
+				FROM point_use_history ) t
+		WHERE t.customerId = #{customerId} AND t.category NOT LIKE CONCAT('%', '쇼핑', '%')
+		<if test="pointState != null || pointState != ''">
+			AND t.point LIKE CONCAT('%', #{pointState}, '%')
+		</if>
+		ORDER BY t.createdate DESC
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+
+	<!-- 페이징용 리뷰 리스트 데이터 개수 -->
+	<select id="reviewCnt" resultType="int" parameterType="string">
+			SELECT
+				COUNT(*) cnt
+			FROM customer c INNER JOIN booking b
+			ON c.customer_id = b.customer_id
+			INNER JOIN review r
+			ON b.booking_no = r.booking_no
+			WHERE c.customer_id = #{customerId}
+	</select>
+
+	<!-- 리뷰 리스트 -->
+	<select id="reviewList" resultType="map" parameterType="map">
+		select
+			b.booking_no bookingNo
+			, c.customer_id customerId
+			, bc.booking_company_name companyName
+			, bp.booking_product_name productName
+			, b.booking_date bookingDate
+			, b.booking_total_price totalPrice
+			, ri.review_img_origin_name reviewImgOriginName
+			, r.review_memo reviewMemo
+			, rc.review_comment_memo commnetMemo
+			, rc.createdate commentDate
+			, r.star_rating starRating
+			, r.createdate createdate
+		FROM customer c INNER JOIN booking b
+		ON c.customer_id = b.customer_id
+		INNER JOIN booking_company bc
+		ON b.booking_company_id = bc.booking_company_id
+		INNER JOIN booking_product bp
+		ON b.product_no = bp.booking_product_no
+		INNER JOIN review r
+		ON b.booking_no = r.booking_no
+		INNER JOIN review_img ri
+		ON r.booking_no = ri.booking_no
+		LEFT JOIN review_comment rc
+		ON r.booking_no = rc.booking_no
+		WHERE c.customer_id = #{customerId}
+	</select>
+
+	<!-- 예약에 대한 신고 -->
+	<insert id="insertReport" parameterType="goodee.gdj58.booking_c.vo.Report">
+		INSERT report(
+			report_category
+			, report_content
+			, report_memo
+		) VALUES (
+			#{reportCategory}
+			, #{reportContent}
+			, #{reportMemo}
+		)
+	</insert>
+
+	<!-- 페이징용 예약 내역 데이터 개수 -->
+	<select id="bookingCnt" resultType="int" parameterType="map">
+		SELECT COUNT(c.cnt)
+		FROM
+		(SELECT 
+			COUNT(*) cnt
+		FROM customer c INNER JOIN booking b
+		ON c.customer_id = b.customer_id
+		WHERE c.customer_id = #{customerId}
+		GROUP BY b.booking_request_date) c
+	</select>
+
+	<!-- 예약 내역 리스트 -->
+	<select id="bookingList" resultType="map" parameterType="map">
+		SELECT
+			b.booking_no bookingNo
+			, b.booking_company_id bkcId
+			, bc.booking_company_name companyName
+			, bp.booking_product_name productName
+			, b.booking_date bookingDate
+			, b.booking_use_point usePoint
+			, b.booking_total_price totalPrice
+			, b.booking_state bookingState
+			, IFNULL(r.review_memo, 'true') review
+			, b.booking_request_date requestDate
+			, IFNULL(rp.report_content, 'true') report
+		FROM customer c INNER JOIN booking b
+		ON c.customer_id = b.customer_id
+		INNER JOIN booking_company bc
+		ON b.booking_company_id = bc.booking_company_id
+		INNER JOIN booking_product bp
+		ON b.product_no = bp.booking_product_no
+		LEFT JOIN review r
+		ON b.booking_no = r.booking_no
+		LEFT JOIN report rp
+		ON rp.report_content = b.booking_no
+		WHERE c.customer_id = #{customerId}
+		<if test="bookingState != null || bookingState != ''">
+			AND b.booking_state LIKE CONCAT('%', #{bookingState}, '%')
+		</if>
+		GROUP BY b.booking_request_date
+		<if test="dateSort == 'DESC'"> ORDER BY  b.booking_date DESC </if>
+		<if test="dateSort == 'ASC'"> ORDER BY  b.booking_date ASC </if>
+		LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+
+	<!-- 고객 상세 정보 -->
+	<select id="customerOne" resultType="map" parameterType="string">
+		SELECT
+			c.customer_id customerId
+			, c.customer_pw customerPw
+			, c.customer_name customerName
+			, c.customer_nickname customerNickname
+			, c.customer_gender customerGender
+			, (SELECT ROUND((TO_DAYS(NOW()) - (TO_DAYS(SUBSTR(customer_birth, 3)))) / 365) AS age FROM customer WHERE customer_id = #{customerId}) AS customerAge
+			, c.customer_birth customerBirth
+			, c.customer_phone customerPhone
+			, c.customer_email customerEmail
+			, c.customer_address customerAddress
+			, c.customer_postcode customerPostcode
+			, c.customer_postcode customerPostCode
+			, c.customer_point customerPoint
+			, c.customer_pay customerPay
+			, c.createdate createdate
+			, ci.customer_img_save_name customerImgSaveName
+			, ci.customer_img_origin_name customerImgOriginName
+		FROM customer c LEFT OUTER JOIN customer_img ci
+		ON c.customer_id = ci.customer_id
+		WHERE c.customer_id = #{customerId}
+	</select>
+</mapper>
