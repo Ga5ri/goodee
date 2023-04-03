@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<!-- Chart CDN 주소 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+<body>
+	<canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+	
+	<script>
+		let xModel = [];
+		let dataModel = []; // 배열안에 다시 배열을 할당
+		$.ajax({
+			async : false // 동기처리
+			, url : '/restapi/scoreData'
+			, type : 'get'
+			, success : function(model) { // model : /restapi/monthData 백엔드에서 객체로 반환 -> 변환이 필요
+				// for(let i=0; i<model.length; i++) {}
+				// model.forEach(function(item, index) {})
+				// $.each(model, function(index, item) {})
+				for(let attr in model[0]) {
+					xModel.push(attr);
+				}
+				
+				model.forEach(function(item) {
+					let arr = [];
+					for(let attr in item) {					
+						arr.push(item[attr]);
+					}
+					dataModel.push(arr);
+				});
+				// dataModel = [[첫번째 1~12 성적배열], [두번째], [세번째]]
+			}
+		});
+		
+	</script>
+	
+	<script>
+		
+		new Chart("myChart", {
+		  type: "line",
+		  data: {
+		    labels: xModel,
+		    datasets: [{ 
+		      data: dataModel[0],
+		      borderColor: "red",
+		      fill: false
+		    }, { 
+		      data: dataModel[1],
+		      borderColor: "green",
+		      fill: false
+		    }, { 
+		      data: dataModel[2],
+		      borderColor: "blue",
+		      fill: false
+		    }]
+		  },
+		  options: {
+		    legend: {display: false}
+		  }
+		});
+	</script>
+</body>
+</html>

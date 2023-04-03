@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<!-- Chart CDN 주소 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+<body>
+	<canvas id="myChart" style="width:100%;max-width:800px"></canvas>
+	
+	<!-- 차트 모델값을 가져오는 코드 -->
+	<script>
+		// 모델 데이터 가져온 후에 아래 차트가 그려져야 한다 -> 동기로 처리해야 한다
+		// async 값을 false로 변경 참고-> https://api.jquery.com/jquery.ajax
+		let xModel = []; // 키배열
+		let yModel = []; // 값배열
+		let barColorsModel = ['#FF0000', '#00FF00', '#0000FF', '#F0F000', '#0F0F00', '#00F0F0', '#00FFFF', '#FFFF00', '#FF00FF', '#F0FF0F', '#0FFFFF', '#0FFFF0']; // 색상이 지정되지 않은 배열은 회색(디폴트)
+		
+		$.ajax({
+			async : false // 동기처리
+			, url : '/restapi/monthData'
+			, type : 'get'
+			, success : function(model) { // model : /restapi/monthData 백엔드에서 객체로 반환 -> 변환이 필요
+				for(let attr in model) { // attr에는 키(속성)값 {1:500, 2:400, ...}
+					xModel.push(attr);
+					yModel.push(model[attr]);
+				}
+			}
+		});
+	</script>
+	
+	<!-- 차트를 그리는 스크립트 코드 -->
+	<script>
+		var xValues = xModel;
+		var yValues = yModel;
+		var barColors = barColorsModel;
+		
+		new Chart("myChart", {
+		  type: "bar",
+		  data: {
+	    	labels: xValues,
+		    datasets: [{
+		      backgroundColor: barColors,
+		      data: yValues
+		    }]
+		  },
+		  options: {
+		    legend: {display: false},
+		    title: {
+		      display: true,
+		      text: "World Wine Production 2018"
+		    }
+		  }
+		});
+	</script>
+</body>
+</html>

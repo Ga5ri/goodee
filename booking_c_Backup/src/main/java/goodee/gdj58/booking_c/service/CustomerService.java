@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CustomerService {
 	@Autowired private CustomerMapper customerMapper;
 	// 휴면 전환을 위한 날짜 계산
-	@Scheduled(cron = "*/100000000000000 * * * * *")
+	@Scheduled(cron = "*/5 * * * * *")
 	public void updateCustomerActive() {
 		log.debug(FontColor.CYAN+"스케쥴러실행");
 		List<Map<String, Object>> list = customerMapper.selectLastLogin();
@@ -57,6 +57,7 @@ public class CustomerService {
 			
 			LocalDate lastLoginDate1 = LocalDate.parse(lastLoginDate);
 			LocalDate minusYear = LocalDate.parse(format.format(cal.getTime()));
+			log.debug(FontColor.CYAN+"minusYear"+minusYear);
 			if(lastLoginDate1.isBefore(minusYear)) {
 				log.debug(FontColor.CYAN+"트루면 출력(lastLoginDate1가 더 크다?");
 			}
